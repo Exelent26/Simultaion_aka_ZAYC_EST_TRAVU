@@ -1,70 +1,74 @@
-package main;
+package utils;
 
 import main.Entities.Creature;
 import main.Entities.Entity;
+import main.World;
 
 import java.util.*;
 
 public class BFS {
 
+    private Map<Coordinates, Coordinates> bfs(Creature finder, World world) {
+        Coordinates start = finder.getCoordinates();
+        Class<?> targetClass = finder.getFoodType();
 
-    private Map<Coordinates, Coordinates> bfs(Creature finder, World world)  {
-
-        Coordinates start = finder.coordinates;
-
-        Class<?> targetClass = finder.getFood();
         Deque<Coordinates> queue = new ArrayDeque<>();
-        List<Coordinates> visited = new ArrayList<>();
-        Map<Coordinates, Coordinates> pathForReleasePath = new HashMap<>();
+        Set<Coordinates> visited = new HashSet<>();
+        Map<Coordinates, Coordinates> cameFrom = new HashMap<>();
 
         queue.add(start);
         visited.add(start);
 
         while (!queue.isEmpty()) {
             Coordinates current = queue.poll();
-            for (Coordinates newCoordinate : world.getAvailableDirectionsForMove(current)) {
-                if (!visited.contains(newCoordinate)) {
-                    visited.add(newCoordinate);
-                    queue.add(newCoordinate);
-                    pathForReleasePath.put(newCoordinate, current);
-                }
 
-                Entity entityAtCoordinate = world.getEntity(newCoordinate);
-                if (entityAtCoordinate != null && entityAtCoordinate.getClass() == targetClass) {
-                    return pathForReleasePath;
+            for (Coordinates neighbor : world.getAvailableMoves(current, finder)) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                    cameFrom.put(neighbor, current);
+
+                    Entity entityAtNeighbor = world.getEntity(neighbor);
+                    if (entityAtNeighbor != null && targetClass.isInstance(entityAtNeighbor)) { // Используем isInstance
+                        return cameFrom;
+                    }
                 }
             }
         }
-        //throw new PathNotFoundExeption("Path from " + start + " to target entity was not found.");
         return new HashMap<>();
     }
-    public List<Coordinates> pathfinder(Creature baseEntity, World world) {
-        Map<Coordinates, Coordinates> pathForReleasePath = bfs(baseEntity, world);
 
-        if (pathForReleasePath.isEmpty()) {
+    public List<Coordinates> pathfinder(Creature baseEntity, World world) {
+        Map<Coordinates, Coordinates> cameFrom = bfs(baseEntity, world);
+
+        if (cameFrom.isEmpty()) {
             return new ArrayList<>();
         }
+
         Coordinates targetCoordinates = null;
-        for (Coordinates coordinate : pathForReleasePath.keySet()) {
+        for (Coordinates coordinate : cameFrom.keySet()) {
             Entity entity = world.getEntity(coordinate);
-            if (entity != null && entity.getClass() == baseEntity.getFood()) {
+            if (entity != null && baseEntity.getFoodType().isInstance(entity)) {
                 targetCoordinates = coordinate;
                 break;
             }
         }
+
         if (targetCoordinates == null) {
             return new ArrayList<>();
         }
+
         List<Coordinates> path = new ArrayList<>();
         Coordinates current = targetCoordinates;
-        while (current != null && !current.equals(baseEntity.coordinates)) {
+
+        while (current != null && !current.equals(baseEntity.getCoordinates())) {
             path.add(current);
-            current = pathForReleasePath.get(current);
+            current = cameFrom.get(current);
         }
-        path.add(baseEntity.coordinates);
+
+        path.add(baseEntity.getCoordinates());
         Collections.reverse(path);
 
         return path;
     }
-
 }

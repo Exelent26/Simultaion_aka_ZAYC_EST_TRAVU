@@ -1,4 +1,9 @@
 package main.Entities;
 
-public class Three {
+import utils.Coordinates;
+
+public class Tree extends Entity {
+    public Tree(Coordinates coordinates) {
+        super(coordinates);
+    }
 }

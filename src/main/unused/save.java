@@ -27,3 +27,56 @@
 
         }
 */
+// TODO: Временное решение для создания пути и охоты за травой и зайцами
+/*int grassQuantity = world.getEntitiesOfType(Grass.class).size();
+
+
+        while (grassQuantity != 0) {
+            for (Creature creature : World.creatures) {
+                if (creature instanceof Herbivore) {
+
+                    path = worldBFS.pathfinder(creature,world);
+                    if (!path.isEmpty()) {
+                        Coordinates nextStep = path.get(1);
+                        if (world.getEntity(nextStep) != null && world.getEntity(nextStep).getClass() == Grass.class) {
+                            grassQuantity--;
+                            world.removeEntity(nextStep);
+                            System.out.println(grassQuantity);
+                        }
+                        world.moveEntity(path.get(0), nextStep, creature);
+
+                    }else {
+                        break;
+                    }
+                }
+            }
+            WordRender.worldRender(world);
+            System.out.println();
+
+        }
+        int herbivoreQuantity = world.getEntitiesOfType(Herbivore.class).size();
+        while (herbivoreQuantity != 0) {
+            for (Creature creature : World.predator) {
+                if (creature instanceof Predator) {
+
+                    path = improvedBfsPathFinder.findPath(creature.coordinates,creature.getFood());
+                    if (!path.isEmpty()) {
+                        Coordinates nextStep = path.get(1);
+                        if (world.getEntity(nextStep) != null && world.getEntity(nextStep).getClass() == Herbivore.class) {
+                            herbivoreQuantity--;
+                            world.removeEntity(nextStep);
+                            System.out.println(grassQuantity);
+                        }
+                        world.moveEntity(path.get(0), nextStep, creature);
+
+                    }else {
+                        break;
+                    }
+                }
+            }
+            WordRender.worldRender(world);
+            System.out.println();
+
+        }
+
+    }*/

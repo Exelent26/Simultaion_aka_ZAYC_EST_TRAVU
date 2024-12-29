@@ -4,143 +4,101 @@ import main.Entities.*;
 import utils.Coordinates;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class World {
-    public static final int WORLD_WIDTH = 10;
-    public static final int WORLD_HEIGHT = 10;
-    static int HERBIVORE_QUANTITY = 4;
-    public static int GRASS_QUANTITY = 15;
-    static int ROCK_QUANTITY = 1;
-    static int PREDATOR_QUANTITY = 2;
+    public static final int WIDTH = SimulationConfig.WORLD_WIDTH;
+    public static final int HEIGHT = SimulationConfig.WORLD_HEIGHT;
+    private final Set<Coordinates> reservedCoordinates = new HashSet<>();
 
-
-    static Random random = new Random();
-    public static List<Creature> creatures = new ArrayList<>();
-    public static List<Herbivore> herbivores = new ArrayList<>();
-    public static List<Creature> predator = new ArrayList<>();
-
-
-    public static HashMap<Coordinates, Entity> entities = new HashMap<>();
-
-    public void setEntity(Coordinates coordinates, Entity entity) {
-        entity.coordinates = coordinates;
-        entities.put(coordinates, entity);
+    public Map<Coordinates, Entity> getEntities() {
+        return entities;
     }
-    public void createEntity(Entity entity) {
-        entities.put(entity.coordinates, entity);
 
-    }
-    protected void worldCreation() { //TODO: перенести в экшн, тут не место
+    private final Map<Coordinates, Entity> entities = new HashMap<>();
 
-        int totalEntities = HERBIVORE_QUANTITY + GRASS_QUANTITY + ROCK_QUANTITY+PREDATOR_QUANTITY;
-        int currentEntities = 0;
-
-        while (currentEntities < totalEntities) {
-
-            Coordinates tempCoordinates = makeRandomPositionForEntity();
-            if (isCoordinateFree(tempCoordinates)) {
-                Entity entity = null;
-                if (currentEntities < HERBIVORE_QUANTITY) {
-                    entity = new Herbivore(tempCoordinates);
-                    creatures.add((Creature)entity);
-                    herbivores.add((Herbivore)entity);
-                } else if (currentEntities < HERBIVORE_QUANTITY+ROCK_QUANTITY) {
-                    entity = new Rock(tempCoordinates);
-                } else if (currentEntities < HERBIVORE_QUANTITY+ROCK_QUANTITY+PREDATOR_QUANTITY) {
-                    entity = new Predator(tempCoordinates);
-                    predator.add((Creature) entity);
-                } else if(currentEntities < HERBIVORE_QUANTITY+ROCK_QUANTITY+PREDATOR_QUANTITY+GRASS_QUANTITY) {
-                    entity = new Grass(tempCoordinates);
-                }
-                setEntity(tempCoordinates, entity);
-                currentEntities++;
-            }
+    public void addEntity(Entity entity) {
+        entities.put(entity.getCoordinates(), entity);
+        if(entity instanceof Predator || entity instanceof Herbivore) {
+            System.out.println("Entity added: " + entity + " at " + entity.getCoordinates());
         }
     }
+    public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
+        // координаты находятся в пределах мира
+        if (!isWithinBounds(coordinates)) {
+            return false;
+        }
 
-    public Entity getEntity(Coordinates coordinates) {
-        return entities.get(coordinates);
+        // клетка проходима для конкретного энтити
+        return isCellPassable(coordinates, creature);
     }
 
     public void removeEntity(Coordinates coordinates) {
         entities.remove(coordinates);
     }
 
-    public List<Entity> getEntitiesOfType(Class<?> entityType) {
-        return entities.values().stream()
-                .filter(entity -> entity.getClass() == entityType)
-                .collect(Collectors.toList());
+    public Entity getEntity(Coordinates coordinates) {
+        return entities.get(coordinates);
     }
 
-    public void moveEntity(Coordinates oldCoordinates, Coordinates newCoordinates, Entity entity) {
-        entities.remove(oldCoordinates);
-        setEntity(newCoordinates, entity);
+    public void moveEntity(Coordinates from, Coordinates to, Entity entity) {
+        if(entities.get(from).equals(entity)) {
+            entities.remove(from);
+        }
+        entities.put(to, entity);
     }
+
+
+    public boolean isCoordinateFree(Coordinates coordinates) {
+        return !entities.containsKey(coordinates);
+    }
+    public boolean isCellPassable(Coordinates coordinates, Creature creature) {
+        if (!isWithinBounds(coordinates)) {
+            return false;
+        }
+
+        Entity entity = entities.get(coordinates);
+        if (entity == null) {
+            return true;
+        }
+
+        if (creature instanceof Herbivore) {
+            return !(entity instanceof Tree || entity instanceof Predator || entity instanceof Rock || entity instanceof Herbivore);
+        } else if (creature instanceof Predator) {
+            return !(entity instanceof Tree || entity instanceof Rock || entity instanceof Predator);
+        }
+        return false;
+    }
+
+
+    public boolean isWithinBounds(Coordinates coordinates) {
+        return coordinates.x >= 0 && coordinates.x < HEIGHT && coordinates.y >= 0 && coordinates.y < WIDTH;
+    }
+
     public Coordinates makeRandomPositionForEntity() {
-        Coordinates randomCoordinateForFreeMove = new Coordinates(random.nextInt(WORLD_WIDTH), random.nextInt(WORLD_HEIGHT));
+        Random random = new Random();
+        Coordinates randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
 
         while(!isCoordinateFree(randomCoordinateForFreeMove)) {
-            randomCoordinateForFreeMove = new Coordinates(random.nextInt(WORLD_WIDTH), random.nextInt(WORLD_HEIGHT));
+            randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
         }
         return randomCoordinateForFreeMove;
 
     }
 
-    public boolean isCoordinateFree(Coordinates coordinates) {
-        return !entities.containsKey(coordinates);
-    }
+    public List<Coordinates> getAvailableMoves(Coordinates coordinates, Creature creature) {
+        List<Coordinates> moves = Arrays.asList(
+                coordinates.shift(0, 1),
+                coordinates.shift(0, -1),
+                coordinates.shift(1, 0),
+                coordinates.shift(-1, 0)
+        );
 
-    public boolean isPlaceAvailableForMove(Coordinates coordinates) {// TODO: при переносе метода в симуляцию добавить хищника(Predator) и деревья(Threes)
-        Entity entityInNewPosition = entities.get(coordinates);
-        if (entityInNewPosition instanceof Rock ||  entityInNewPosition instanceof Predator) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public Coordinates makeCoordinatesForRandomMovement(Coordinates oldcoordinates, World world) {
-        List<Coordinates> availableDirections = (world.getAvailableDirectionsForMove(oldcoordinates)).stream().toList();
-        int randomDirection = (int) (Math.random() * availableDirections.size());
-        return availableDirections.get(randomDirection);
-
-    }
-
-    public boolean isPositionInMap(Coordinates coordinates) {
-        if (coordinates.POSITION_OF_WIDE < 0 || coordinates.POSITION_OF_WIDE >= WORLD_WIDTH) {
-            return false;
-        }
-        if (coordinates.POSITION_OF_HEIGHT < 0 || coordinates.POSITION_OF_HEIGHT >= WORLD_HEIGHT) {
-            return false;
-        }
-        return true;
-    }
-
-    public Set<Coordinates> getAvailablePositionsForMove(Coordinates coordinates) {
-        return new HashSet<>(Arrays.asList(
-                new Coordinates(coordinates.POSITION_OF_HEIGHT, coordinates.POSITION_OF_WIDE + 1),
-                new Coordinates(coordinates.POSITION_OF_HEIGHT, coordinates.POSITION_OF_WIDE - 1),
-                new Coordinates(coordinates.POSITION_OF_HEIGHT + 1, coordinates.POSITION_OF_WIDE),
-                new Coordinates(coordinates.POSITION_OF_HEIGHT - 1, coordinates.POSITION_OF_WIDE)
-
-        ));
-    }
-
-    public Set<Coordinates> getAvailableDirectionsForMove(Coordinates coordinates) {
-        Set<Coordinates> availableDirections = new HashSet<>();
-        for (Coordinates direction : getAvailablePositionsForMove(coordinates)) {
-            if (isPositionInMap(direction) && isPlaceAvailableForMove(direction)) {
-                availableDirections.add(direction);
+        List<Coordinates> validMoves = new ArrayList<>();
+        for (Coordinates move : moves) {
+            if (isWithinBounds(move) && isCellPassable(move, creature)) { // Используем isCellPassable
+                validMoves.add(move);
             }
         }
-        return availableDirections;
+        return validMoves;
     }
-
-
-    public void addCreatureToCreatureList(Creature entity) {
-        creatures.add(entity);
-    }
-
-
 }

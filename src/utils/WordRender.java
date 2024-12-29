@@ -1,6 +1,8 @@
-package main;
+package utils;
 
 import main.Entities.*;
+import main.SimulationConfig;
+import main.World;
 
 public class WordRender {
 
@@ -13,21 +15,18 @@ public class WordRender {
 
     public static void worldRender(World world) {
 
-        for (int x = 0; x < World.WORLD_HEIGHT; x++) {
+        for (int x = 0; x < SimulationConfig.WORLD_HEIGHT; x++) {
             System.out.println();
-            for (int y = 0; y < World.WORLD_WIDTH; y++) {
+            for (int y = 0; y < SimulationConfig.WORLD_WIDTH; y++) {
                 Coordinates coordinates = new Coordinates(x, y);
-                Entity tempCoordinates = World.entities.get(coordinates);
-                if(tempCoordinates instanceof Herbivore){
-                    System.out.print(HERBIVORE_SPRITE);
-                } else if(tempCoordinates instanceof Grass){
-                    System.out.print(GRASS_SPRITE);
-                }else if(tempCoordinates instanceof Rock) {
-                    System.out.print(ROCK_SPRITE);
-                }else if(tempCoordinates instanceof Predator) {
-                    System.out.print(PREDATOR_SPRITE);
-                }else {
-                    System.out.print(FREE_SQUARE);
+                Entity tempCoordinates = world.getEntity(coordinates);
+                switch (tempCoordinates) {
+                    case Herbivore herbivore -> System.out.print(HERBIVORE_SPRITE);
+                    case Grass grass -> System.out.print(GRASS_SPRITE);
+                    case Tree tree -> System.out.print(TREE_SPRITE);
+                    case Rock rock -> System.out.print(ROCK_SPRITE);
+                    case Predator predator -> System.out.print(PREDATOR_SPRITE);
+                    case null, default -> System.out.print(FREE_SQUARE);
                 }
             }
 

@@ -1,10 +1,9 @@
-package main;//Grass - ресурс для травоядных.
+package main.Entities;
 
+import utils.Coordinates;
 
 public class Grass extends Entity {
-
     public Grass(Coordinates coordinates) {
-        super.coordinates = coordinates;
+        super(coordinates);
     }
-    public Grass(){};
 }

@@ -1,8 +1,10 @@
-package utils;
+/*
+package main.unused;
 
 import main.Entities.Entity;
 import main.Entities.EntityNotFoundException;
 import main.World;
+import utils.Coordinates;
 
 import java.util.*;
 
@@ -68,7 +70,8 @@ public class ImprovedBfsPathFinder {
     }
 
     // Получение соседних координат
-    /*private List<utils.Coordinates> getConnectedCoordinates(utils.Coordinates coordinates) {
+    */
+/*private List<utils.Coordinates> getConnectedCoordinates(utils.Coordinates coordinates) {
         List<utils.Coordinates> neighbors = new ArrayList<>();
         int x = coordinates.getX();
         int y = coordinates.getY();
@@ -82,5 +85,7 @@ public class ImprovedBfsPathFinder {
         // Проверяем валидность координат
         neighbors.removeIf(neighbor -> !worldMap.areCoordinatesValid(neighbor));
         return neighbors;
-    }*/
+    }*//*
+
 }
+*/

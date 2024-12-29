@@ -1,4 +1,13 @@
 package main.Actions;
 
-public class Action {
+import main.World;
+
+interface Action {
+    World execute();
+
+    void execute(World world);
+
+    default boolean isSimulationOver(World world) {
+        return false;
+    }
 }
