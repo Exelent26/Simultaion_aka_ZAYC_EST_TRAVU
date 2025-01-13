@@ -27,7 +27,7 @@ public class Simulation {
 
         while (true){
 
-            System.out.println("Step: " + (step + 1));
+            System.out.println("Step: " + (step + 1) + "macos fix");
 
             List<Creature> creatures = getAllCreatures(world);
 
