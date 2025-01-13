@@ -3,7 +3,7 @@ package main.Actions;
 import main.Entities.*;
 import main.SimulationConfig;
 import main.World;
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 public class InitialActions implements Action {
 

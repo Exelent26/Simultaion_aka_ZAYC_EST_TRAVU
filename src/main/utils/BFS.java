@@ -1,4 +1,4 @@
-package utils;
+package main.utils;
 
 import main.Entities.Creature;
 import main.Entities.Entity;

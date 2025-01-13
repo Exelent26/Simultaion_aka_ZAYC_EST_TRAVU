@@ -17,7 +17,7 @@
                     }
                 } else {
                     // Если пути к текущей траве нет, травоядное перемещается случайно
-                    utils.Coordinates newPosition = creature.makeCoordinatesForRandomMovement(creature.coordinates,world);
+                    main.utils.Coordinates newPosition = creature.makeCoordinatesForRandomMovement(creature.coordinates,world);
                     world.moveEntity(creature.coordinates, newPosition, creature);
                     WordRender.worldRender(world);
                     System.out.println();

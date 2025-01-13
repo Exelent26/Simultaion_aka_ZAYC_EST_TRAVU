@@ -2,7 +2,7 @@
 
 
 import main.World;
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 import java.util.List;
 

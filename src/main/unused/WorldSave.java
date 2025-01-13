@@ -2,7 +2,7 @@
 package main;
 
 import main.Entities.*;
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 import java.util.*;
 import java.util.stream.Collectors;

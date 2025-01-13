@@ -2,10 +2,9 @@ package main;
 
 import main.Actions.InitialActions;
 import main.Entities.*;
-import main.World;
-import utils.BFS;
-import utils.Coordinates;
-import utils.WordRender;
+import main.utils.BFS;
+import main.utils.Coordinates;
+import main.utils.WordRender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +16,17 @@ public class Simulation {
     private final World world;
     private final BFS bfs;
     private final Random random = new Random();
-
+    public static int step = 0;
     public Simulation(World world) {
         this.world = world;
         this.bfs = new BFS();
     }
 
-    public void runSimulation(int steps) {
+    public void runSimulation() {
         WordRender.worldRender(world);
 
-        for (int step = 0; step < steps; step++) {
+        while (true){
+
             System.out.println("Step: " + (step + 1));
 
             List<Creature> creatures = getAllCreatures(world);
@@ -40,12 +40,15 @@ public class Simulation {
                     if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
                         creature.makeMove(world, path);
                     }
+                    if(nextStep == null){
+                        creature.makeRandomMove(world);
+                    }
                 }
             }
 
             WordRender.worldRender(world);
             try {
-                Thread.sleep(10);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -66,6 +69,6 @@ public class Simulation {
         InitialActions initialActions = new InitialActions();
         World world = initialActions.execute();
         Simulation simulation = new Simulation(world);
-        simulation.runSimulation(20);
+        simulation.runSimulation();
     }
 }

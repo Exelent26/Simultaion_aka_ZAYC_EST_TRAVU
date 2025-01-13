@@ -1,7 +1,7 @@
 package main.Entities;
 
 import main.World;
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 import java.util.List;
 
@@ -14,9 +14,11 @@ public class Predator extends Creature {
 
     @Override
     public void makeMove(World world, List<Coordinates> path) {
-        if (path == null || path.isEmpty()) {
-            makeRandomMove(world); // Случайное перемещение если путь пуст
-            return;
+
+        if (path == null || path.size() <= 1) {
+            makeRandomMove(world);
+            return;// Случайное перемещение если путь пуст
+
         }
 
         Coordinates nextStep = path.get(1); // Первый шаг на пути
@@ -24,14 +26,13 @@ public class Predator extends Creature {
         // Проверяем, что в клетке
         Entity entity = world.getEntity(nextStep);
 
-
         if (entity instanceof Herbivore) {
             System.out.println("Predator " + this + " eats Herbivore at " + nextStep);
             interactWithEntity(world, entity, nextStep);
         }
 
-
         System.out.println("Moving entity " + this + " from " + this.coordinates + " to " + nextStep);
+
         makeStep(world, nextStep);
     }
     @Override

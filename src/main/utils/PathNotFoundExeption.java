@@ -1,4 +1,4 @@
-package utils;
+package main.utils;
 
 public class PathNotFoundExeption extends RuntimeException{
     public PathNotFoundExeption(String message) {

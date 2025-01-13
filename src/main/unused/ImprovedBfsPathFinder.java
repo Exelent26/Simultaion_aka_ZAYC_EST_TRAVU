@@ -4,7 +4,7 @@ package main.unused;
 import main.Entities.Entity;
 import main.Entities.EntityNotFoundException;
 import main.World;
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 import java.util.*;
 
@@ -19,12 +19,12 @@ public class ImprovedBfsPathFinder {
     }
 
     public <T extends Entity> List<Coordinates> findPath(Coordinates startCoordinates, Class<?> targetEntity) {
-        // Очередь для utils.BFS
+        // Очередь для main.utils.BFS
         Deque<Coordinates> queue = new ArrayDeque<>();
         // Карта для отслеживания пути
         Map<Coordinates, Coordinates> seenCoordinates = new HashMap<>();
 
-        // Инициализация utils.BFS
+        // Инициализация main.utils.BFS
         queue.add(startCoordinates);
         seenCoordinates.put(startCoordinates, null); // null - стартовая точка не имеет родителя
 
@@ -71,16 +71,16 @@ public class ImprovedBfsPathFinder {
 
     // Получение соседних координат
     */
-/*private List<utils.Coordinates> getConnectedCoordinates(utils.Coordinates coordinates) {
-        List<utils.Coordinates> neighbors = new ArrayList<>();
+/*private List<main.utils.Coordinates> getConnectedCoordinates(main.utils.Coordinates coordinates) {
+        List<main.utils.Coordinates> neighbors = new ArrayList<>();
         int x = coordinates.getX();
         int y = coordinates.getY();
 
         // Добавляем соседей (вверх, вниз, влево, вправо)
-        neighbors.add(new utils.Coordinates(x - 1, y));
-        neighbors.add(new utils.Coordinates(x + 1, y));
-        neighbors.add(new utils.Coordinates(x, y - 1));
-        neighbors.add(new utils.Coordinates(x, y + 1));
+        neighbors.add(new main.utils.Coordinates(x - 1, y));
+        neighbors.add(new main.utils.Coordinates(x + 1, y));
+        neighbors.add(new main.utils.Coordinates(x, y - 1));
+        neighbors.add(new main.utils.Coordinates(x, y + 1));
 
         // Проверяем валидность координат
         neighbors.removeIf(neighbor -> !worldMap.areCoordinatesValid(neighbor));

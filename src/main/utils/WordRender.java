@@ -1,5 +1,6 @@
-package utils;
+package main.utils;
 
+import main.Actions.ConsoleCleaner;
 import main.Entities.*;
 import main.SimulationConfig;
 import main.World;
@@ -14,6 +15,7 @@ public class WordRender {
     public static final String FREE_SQUARE = "\uD83D\uDFEB";
 
     public static void worldRender(World world) {
+
 
         for (int x = 0; x < SimulationConfig.WORLD_HEIGHT; x++) {
             System.out.println();

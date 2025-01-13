@@ -2,9 +2,9 @@
 package main;
 
 import main.Actions.InitialActions;
-import utils.BFS;
-import utils.Coordinates;
-import utils.WordRender;
+import main.utils.BFS;
+import main.utils.Coordinates;
+import main.utils.WordRender;
 
 import java.util.List;
 

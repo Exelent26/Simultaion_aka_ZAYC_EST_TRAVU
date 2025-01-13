@@ -1,6 +1,6 @@
 package main.Entities;
 
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 public class Tree extends Entity {
     public Tree(Coordinates coordinates) {

@@ -1,12 +1,10 @@
 package main.Entities;
 
 import main.World;
-import utils.Coordinates;
+import main.utils.Coordinates;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public abstract class Creature extends Entity {
     protected final Class<?> foodType;
@@ -32,6 +30,9 @@ public abstract class Creature extends Entity {
             Random rand = new Random();
             Coordinates randomMove = availableMoves.get(rand.nextInt(availableMoves.size()));
             makeStep(world, randomMove);
+            System.out.println();
+            System.out.println("Random moving entity " + this + " from " + this.coordinates + " to " + randomMove);
+            //world.moveEntity(this.coordinates,randomMove,this);
         }
     }
 

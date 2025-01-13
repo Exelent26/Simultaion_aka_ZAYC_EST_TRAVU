@@ -1,7 +1,7 @@
 /*
 package main.Entities;
 
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 public abstract class Entity {
     public Coordinates coordinates;

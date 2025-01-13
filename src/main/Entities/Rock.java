@@ -1,6 +1,6 @@
 package main.Entities;
 
-import utils.Coordinates;
+import main.utils.Coordinates;
 
 public class Rock extends Entity {
     public Rock(Coordinates coordinates) {
