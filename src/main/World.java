@@ -9,19 +9,21 @@ public class World {
     public static final int WIDTH = SimulationConfig.WORLD_WIDTH;
     public static final int HEIGHT = SimulationConfig.WORLD_HEIGHT;
     private final Set<Coordinates> reservedCoordinates = new HashSet<>();
+    private final Map<Coordinates, Entity> entities = new HashMap<>();
+
 
     public Map<Coordinates, Entity> getEntities() {
         return entities;
     }
 
-    private final Map<Coordinates, Entity> entities = new HashMap<>();
 
     public void addEntity(Entity entity) {
         entities.put(entity.getCoordinates(), entity);
-        if(entity instanceof Predator || entity instanceof Herbivore) {
+        if (entity instanceof Predator || entity instanceof Herbivore) {
             System.out.println("Entity added: " + entity + " at " + entity.getCoordinates());
         }
     }
+
     public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
         // координаты находятся в пределах мира
         if (!isWithinBounds(coordinates)) {
@@ -41,7 +43,7 @@ public class World {
     }
 
     public void moveEntity(Coordinates from, Coordinates to, Entity entity) {
-        if(entities.get(from).equals(entity)) {
+        if (entities.get(from).equals(entity)) {
             entities.remove(from);
         }
         entities.put(to, entity);
@@ -51,6 +53,7 @@ public class World {
     public boolean isCoordinateFree(Coordinates coordinates) {
         return !entities.containsKey(coordinates);
     }
+
     public boolean isCellPassable(Coordinates coordinates, Creature creature) {
         if (!isWithinBounds(coordinates)) {
             return false;
@@ -70,19 +73,30 @@ public class World {
     }
 
 
-    public boolean isWithinBounds(Coordinates coordinates) {
-        return coordinates.x >= 0 && coordinates.x < HEIGHT && coordinates.y >= 0 && coordinates.y < WIDTH;
-    }
-
     public Coordinates makeRandomPositionForEntity() {
         Random random = new Random();
         Coordinates randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
 
-        while(!isCoordinateFree(randomCoordinateForFreeMove)) {
+        while (!isCoordinateFree(randomCoordinateForFreeMove)) {
             randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
         }
         return randomCoordinateForFreeMove;
 
+    }
+
+    public boolean isWithinBounds(Coordinates coordinates) {
+        return coordinates.x >= 0 && coordinates.x < HEIGHT && coordinates.y >= 0 && coordinates.y < WIDTH;
+    }
+
+    public List<Creature> getAllCreatures() {
+        List<Creature> creatures = new ArrayList<>();
+        for (Map.Entry<Coordinates, Entity> entry : entities.entrySet()) {
+            if (entry.getValue() instanceof Creature) {
+                creatures.add((Creature) entry.getValue());
+
+            }
+        }
+        return creatures;
     }
 
     public List<Coordinates> getAvailableMoves(Coordinates coordinates, Creature creature) {

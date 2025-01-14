@@ -16,7 +16,8 @@ public class Simulation {
     private final World world;
     private final BFS bfs;
     private final Random random = new Random();
-    public static int step = 0;
+    public static int stepCount = 0;
+
     public Simulation(World world) {
         this.world = world;
         this.bfs = new BFS();
@@ -26,14 +27,14 @@ public class Simulation {
         WordRender.worldRender(world);
 
         while (true){
+            System.out.println();
+            System.out.println("Step: " + (stepCount++));
 
-            System.out.println("Step: " + (step + 1) + "macos fix");
-
-            List<Creature> creatures = getAllCreatures(world);
+            List<Creature> creatures = world.getAllCreatures();
 
             for (Creature creature : creatures) {
                 if (creature != null) {
-                    // путь перед каждым движением
+
                     List<Coordinates> path = bfs.pathfinder(creature, world);
                     Coordinates nextStep = !path.isEmpty() ? path.get(1) : null;
 
@@ -48,22 +49,15 @@ public class Simulation {
 
             WordRender.worldRender(world);
             try {
-                Thread.sleep(50);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
     }
 
-    private List<Creature> getAllCreatures(World world) {
-        List<Creature> creatures = new ArrayList<>();
-        for (Map.Entry<Coordinates, Entity> entry : world.getEntities().entrySet()) {
-            if (entry.getValue() instanceof Creature) {
-                creatures.add((Creature) entry.getValue());
-            }
-        }
-        return creatures;
-    }
+
 
     public static void main(String[] args) {
         InitialActions initialActions = new InitialActions();

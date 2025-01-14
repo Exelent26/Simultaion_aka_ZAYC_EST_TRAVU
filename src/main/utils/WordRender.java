@@ -30,9 +30,11 @@ public class WordRender {
                     case Predator predator -> System.out.print(PREDATOR_SPRITE);
                     case null, default -> System.out.print(FREE_SQUARE);
                 }
+
             }
 
         }
+        System.out.println();
     }
 
 }
