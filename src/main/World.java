@@ -8,11 +8,11 @@ import java.util.*;
 public class World {
     public static final int WIDTH = SimulationConfig.WORLD_WIDTH;
     public static final int HEIGHT = SimulationConfig.WORLD_HEIGHT;
-    private final Set<Coordinates> reservedCoordinates = new HashSet<>();
     private final Map<Coordinates, Entity> entities = new HashMap<>();
 
 
     public Map<Coordinates, Entity> getEntities() {
+        // получение хэшмапы со всему сущностями в мире
         return entities;
     }
 
@@ -35,14 +35,17 @@ public class World {
     }
 
     public void removeEntity(Coordinates coordinates) {
+        // удаление сущности
         entities.remove(coordinates);
     }
 
     public Entity getEntity(Coordinates coordinates) {
+        // получение сущности по координатам
         return entities.get(coordinates);
     }
 
     public void moveEntity(Coordinates from, Coordinates to, Entity entity) {
+        // тупое передвижение энтити из 1 координаты в другое, использую для премещения таргетов.
         if (entities.get(from).equals(entity)) {
             entities.remove(from);
         }
@@ -51,10 +54,12 @@ public class World {
 
 
     public boolean isCoordinateFree(Coordinates coordinates) {
+        // проверка на то что координата свободна
         return !entities.containsKey(coordinates);
     }
 
     public boolean isCellPassable(Coordinates coordinates, Creature creature) {
+        // проверка на то что координата дотижима и в пределах карты
         if (!isWithinBounds(coordinates)) {
             return false;
         }
@@ -85,18 +90,14 @@ public class World {
     }
 
     public boolean isWithinBounds(Coordinates coordinates) {
-        return coordinates.x >= 0 && coordinates.x < HEIGHT && coordinates.y >= 0 && coordinates.y < WIDTH;
+        return coordinates.lines >= 0 && coordinates.lines < HEIGHT && coordinates.columns >= 0 && coordinates.columns < WIDTH;
     }
 
     public List<Creature> getAllCreatures() {
-        List<Creature> creatures = new ArrayList<>();
-        for (Map.Entry<Coordinates, Entity> entry : entities.entrySet()) {
-            if (entry.getValue() instanceof Creature) {
-                creatures.add((Creature) entry.getValue());
-
-            }
-        }
-        return creatures;
+        return entities.values().stream()
+                .filter(entity -> entity instanceof Creature)
+                .map(entity -> (Creature) entity)
+                .toList();
     }
 
     public List<Coordinates> getAvailableMoves(Coordinates coordinates, Creature creature) {

@@ -4,6 +4,7 @@ import main.Entities.Creature;
 import main.Entities.Entity;
 import main.World;
 
+import java.nio.file.Path;
 import java.util.*;
 
 public class BFS {
@@ -38,7 +39,7 @@ public class BFS {
         return new HashMap<>();
     }
 
-    public List<Coordinates> pathfinder(Creature baseEntity, World world) {
+    private List<Coordinates> pathfinder(Creature baseEntity, World world) {
         Map<Coordinates, Coordinates> cameFrom = bfs(baseEntity, world);
 
         if (cameFrom.isEmpty()) {
@@ -70,5 +71,12 @@ public class BFS {
         Collections.reverse(path);
 
         return path;
+    }
+
+    public Coordinates nextStepFromPath(Creature baseEntity, World world) {
+        BFS bfs = new BFS();
+        List<Coordinates> path = bfs.pathfinder(baseEntity, world);
+
+        return !path.isEmpty() ? path.get(1) : null;
     }
 }

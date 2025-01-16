@@ -9,11 +9,13 @@ import java.util.Random;
 public abstract class Creature extends Entity {
     protected final Class<?> foodType;
     protected int health;
+    public static int speed;
 
-    public Creature(Class<?> foodType, Coordinates coordinates, int health) {
+    public Creature(Class<?> foodType, Coordinates coordinates, int health, int speed) {
         super(coordinates);
         this.foodType = foodType;
         this.health = health;
+        this.speed = speed;
     }
 
     public Class<?> getFoodType() {
@@ -32,18 +34,15 @@ public abstract class Creature extends Entity {
             makeStep(world, randomMove);
             System.out.println();
             System.out.println("Random moving entity " + this + " from " + this.coordinates + " to " + randomMove);
-            //world.moveEntity(this.coordinates,randomMove,this);
         }
     }
 
     public void makeStep(World world, Coordinates nextStep) {
         Entity targetEntity = world.getEntity(nextStep);
 
-        // Проверяем, есть ли сущность, с которой можно взаимодействовать
         if (targetEntity != null && canInteract(targetEntity)) {
             interactWithEntity(world, targetEntity, nextStep);
         }
-
 
         if (world.isCellPassable(nextStep, this)) {
             world.moveEntity(this.coordinates, nextStep, this);
@@ -51,15 +50,19 @@ public abstract class Creature extends Entity {
         }
     }
 
-    public void processInteraction(World world, Coordinates target) {
+    /*public void processInteraction(World world, Coordinates target) {
         Entity entity = world.getEntity(target);
         if (entity != null && canInteract(entity)) {
             System.out.println("Interacting with entity at " + target + ": " + entity);
             interactWithEntity(world, entity, target);
         }
-    }
+    }*/
 
     protected abstract void interactWithEntity(World world, Entity entity, Coordinates target);
 
-    public abstract void makeMove(World world, List<Coordinates> path);
+    public abstract void makeMove(World world, Coordinates nextStep);
+
+    public int getSpeed() {
+        return speed;
+    }
 }

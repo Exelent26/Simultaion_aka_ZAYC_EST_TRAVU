@@ -1,11 +1,10 @@
 package main.utils;
 
-import main.Actions.ConsoleCleaner;
 import main.Entities.*;
 import main.SimulationConfig;
 import main.World;
 
-public class WordRender {
+public class WorldRender {
 
     public static final String PREDATOR_SPRITE = "\uD83E\uDD81";
     public static final String HERBIVORE_SPRITE = "\uD83D\uDC07";
