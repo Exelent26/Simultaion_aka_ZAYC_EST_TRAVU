@@ -33,6 +33,9 @@ public class World {
         // клетка проходима для конкретного энтити
         return isCellPassable(coordinates, creature);
     }
+    public boolean containsEntity(Creature creature) {
+        return entities.containsValue(creature);
+    }
 
     public void removeEntity(Coordinates coordinates) {
         // удаление сущности

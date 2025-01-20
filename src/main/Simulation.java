@@ -6,6 +6,7 @@ import main.utils.BFS;
 import main.utils.Coordinates;
 import main.utils.WorldRender;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -31,8 +32,7 @@ public class Simulation {
             List<Creature> creatures = world.getAllCreatures();
 
             for (Creature creature : creatures) {
-                if (creature != null) {
-
+                if (world.containsEntity(creature)) {
                     for (int i = 0; i < creature.getSpeed(); i++) {
                         Coordinates nextStep = bfs.nextStepFromPath(creature, world);
                         if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
