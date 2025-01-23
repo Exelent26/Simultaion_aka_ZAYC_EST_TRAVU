@@ -9,7 +9,7 @@ import java.util.Random;
 public abstract class Creature extends Entity {
     protected final Class<?> foodType;
     protected int health;
-    public static int speed;
+    public  int speed;
 
     public Creature(Class<?> foodType, Coordinates coordinates, int health, int speed) {
         super(coordinates);
@@ -32,7 +32,6 @@ public abstract class Creature extends Entity {
             Random rand = new Random();
             Coordinates randomMove = availableMoves.get(rand.nextInt(availableMoves.size()));
             makeStep(world, randomMove);
-            System.out.println();
             System.out.println("Random moving entity " + this + " from " + this.coordinates + " to " + randomMove);
         }
     }

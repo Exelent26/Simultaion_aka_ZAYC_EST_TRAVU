@@ -26,7 +26,7 @@ public class World {
 
     public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
         // координаты находятся в пределах мира
-        if (!isWithinBounds(coordinates)) {
+        if (!isCoordinateInMap(coordinates)) {
             return false;
         }
 
@@ -63,7 +63,7 @@ public class World {
 
     public boolean isCellPassable(Coordinates coordinates, Creature creature) {
         // проверка на то что координата дотижима и в пределах карты
-        if (!isWithinBounds(coordinates)) {
+        if (!isCoordinateInMap(coordinates)) {
             return false;
         }
 
@@ -92,7 +92,8 @@ public class World {
 
     }
 
-    public boolean isWithinBounds(Coordinates coordinates) {
+    public boolean isCoordinateInMap(Coordinates coordinates) {
+
         return coordinates.lines >= 0 && coordinates.lines < HEIGHT && coordinates.columns >= 0 && coordinates.columns < WIDTH;
     }
 
@@ -113,7 +114,7 @@ public class World {
 
         List<Coordinates> validMoves = new ArrayList<>();
         for (Coordinates move : moves) {
-            if (isWithinBounds(move) && isCellPassable(move, creature)) { // Используем isCellPassable
+            if (isCoordinateInMap(move) && isCellPassable(move, creature)) { // Используем isCellPassable
                 validMoves.add(move);
             }
         }
