@@ -1,0 +1,665 @@
+package main.Actions;
+
+import main.World;
+
+interface Action {
+    World execute();
+
+    void execute(World world);
+
+    default boolean isSimulationOver(World world) {
+        return false;
+    }
+}
+package main.Actions;
+
+public class ConsoleCleaner {
+
+    public void clearConsole() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+}
+}
+package main.Actions;
+
+import main.Entities.*;
+import main.SimulationConfig;
+import main.World;
+import main.utils.Coordinates;
+
+public class InitialActions implements Action {
+
+
+    @Override
+    public World execute() {
+        World world = new World();
+        createEntities(world);
+        return world;
+    }
+
+    @Override
+    public void execute(World world) {
+    }
+
+    private void createEntities(World world) {
+        for (int i = 0; i < SimulationConfig.HERBIVORE_QUANTITY; i++) {
+            Coordinates temp = world.makeRandomPositionForEntity();
+            Herbivore herbivore = new Herbivore(temp);
+            world.addEntity(herbivore);
+        }
+        for (int i = 0; i < SimulationConfig.GRASS_QUANTITY; i++) {
+            world.addEntity(new Grass(world.makeRandomPositionForEntity()));
+        }
+        for (int i = 0; i < SimulationConfig.TREE_QUANTITY; i++) {
+            world.addEntity(new Tree(world.makeRandomPositionForEntity()));
+        }
+        for (int i = 0; i < SimulationConfig.ROCK_QUANTITY; i++) {
+            world.addEntity(new Rock(world.makeRandomPositionForEntity()));
+        }
+        for (int i = 0; i < SimulationConfig.PREDATOR_QUANTITY; i++) {
+            Coordinates temp = world.makeRandomPositionForEntity();
+            Predator predator = new Predator(temp);
+            world.addEntity(predator);
+        }
+    }
+
+
+
+}
+package main.Actions;
+
+import main.Entities.Creature;
+import main.Entities.Herbivore;
+import main.World;
+
+public class SimulationActions implements Action {
+    @Override
+    public World execute() {
+        throw new UnsupportedOperationException("Use execute(World world) instead.");
+    }
+
+    @Override
+    public void execute(World world) {
+        handleReproduction(world);
+    }
+
+    @Override
+    public boolean isSimulationOver(World world) {
+        return true;
+    }
+
+
+
+    private void handleReproduction(World world) {
+        // логика для добавления новых сущностей, зависит от состояния мира
+    }
+}
+package main.Entities;
+
+import main.World;
+import main.utils.Coordinates;
+
+import java.util.List;
+import java.util.Random;
+
+public abstract class Creature extends Entity {
+    protected final Class<?> foodType;
+    protected int health;
+    public  int speed;
+
+    public Creature(Class<?> foodType, Coordinates coordinates, int health, int speed) {
+        super(coordinates);
+        this.foodType = foodType;
+        this.health = health;
+        this.speed = speed;
+    }
+
+    public Class<?> getFoodType() {
+        return foodType;
+    }
+
+    public boolean canInteract(Entity entity) {
+        return foodType.isInstance(entity);
+    }
+
+    public void makeRandomMove(World world) {
+        List<Coordinates> availableMoves = world.getAvailableMoves(coordinates, this);
+        if (!availableMoves.isEmpty()) {
+            Random rand = new Random();
+            Coordinates randomMove = availableMoves.get(rand.nextInt(availableMoves.size()));
+            makeStep(world, randomMove);
+            System.out.println("Random moving entity " + this + " from " + this.coordinates + " to " + randomMove);
+        }
+    }
+
+    public void makeStep(World world, Coordinates nextStep) {
+        Entity targetEntity = world.getEntity(nextStep);
+
+        if (targetEntity != null && canInteract(targetEntity)) {
+            interactWithEntity(world, targetEntity, nextStep);
+        }
+
+        if (world.isCellPassable(nextStep, this)) {
+            world.moveEntity(this.coordinates, nextStep, this);
+            this.coordinates = nextStep;
+        }
+    }
+
+    /*public void processInteraction(World world, Coordinates target) {
+        Entity entity = world.getEntity(target);
+        if (entity != null && canInteract(entity)) {
+            System.out.println("Interacting with entity at " + target + ": " + entity);
+            interactWithEntity(world, entity, target);
+        }
+    }*/
+
+    protected abstract void interactWithEntity(World world, Entity entity, Coordinates target);
+
+    public abstract void makeMove(World world, Coordinates nextStep);
+
+    public int getSpeed() {
+        return speed;
+    }
+}
+package main.Entities;
+
+import main.utils.Coordinates;
+
+public abstract class Entity {
+    public Coordinates coordinates;
+
+    public Entity(Coordinates coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+}
+package main.Entities;
+
+public class EntityNotFoundException extends RuntimeException {
+        public EntityNotFoundException(String message) {
+
+            super(message);
+        }
+    }
+package main.Entities;
+
+import main.utils.Coordinates;
+
+public class Grass extends Entity {
+    public Grass(Coordinates coordinates) {
+        super(coordinates);
+    }
+}
+package main.Entities;
+
+import main.World;
+import main.utils.Coordinates;
+
+import java.util.List;
+
+public class Herbivore extends Creature {
+
+    private int prepareToEatCounter = 0;
+
+    public Herbivore(Coordinates coordinates) {
+        super(Grass.class, coordinates, 20, 1);
+    }
+
+    @Override
+    public void makeMove(World world, Coordinates nextStep) {
+        if (nextStep == null) {
+            makeRandomMove(world);
+            return;
+        }
+
+        System.out.println("Moving entity " + this + " from " + this.coordinates + " to " + nextStep);
+        makeStep(world, nextStep);
+
+        //processInteraction(world, nextStep); возможно лишний метод дублирование makeStep
+    }
+
+    @Override
+    protected void interactWithEntity(World world, Entity entity, Coordinates target) {
+        if (entity != null) {
+            List<Coordinates> adjacentCoordinates = world.getAvailableMoves(target, this);
+            for (Coordinates adjacentCoordinate : adjacentCoordinates) {
+                Entity adjacentEntity = world.getEntity(adjacentCoordinate);
+                if (adjacentEntity instanceof Grass) {
+                    if (prepareToEatCounter == 0) {
+                        prepareToEatCounter++;
+                        return;
+                    } else if (prepareToEatCounter == 1) {
+                        world.removeEntity(adjacentCoordinate);
+                        prepareToEatCounter = 0;
+                        return;
+                    }
+                }
+            }
+            prepareToEatCounter = 0;
+        }
+    }
+}
+package main.Entities;
+
+import main.World;
+import main.utils.Coordinates;
+
+import java.util.List;
+
+public class Predator extends Creature {
+    private final int attackPower = 10;
+
+    public Predator(Coordinates coordinates) {
+        super(Herbivore.class, coordinates, 45,2);
+    }
+
+    @Override
+    public void makeMove(World world, Coordinates nextStep) {
+        if (nextStep == null) {
+            makeRandomMove(world);
+            return;
+        }
+
+        Entity entity = world.getEntity(nextStep);
+
+        if (entity instanceof Herbivore) {
+            System.out.println("Predator " + this + " eats Herbivore at " + nextStep);
+            interactWithEntity(world, entity, nextStep);
+        } //будет ли есть хищник есть зайца без этой команды
+
+        System.out.println("Moving entity " + this + " from " + this.coordinates + " to " + nextStep);
+
+        makeStep(world, nextStep);
+    }
+
+    @Override
+    protected void interactWithEntity(World world, Entity entity, Coordinates target) {
+        if (entity instanceof Herbivore) {
+            world.removeEntity(target);
+
+        }
+    }
+}
+package main.Entities;
+
+import main.utils.Coordinates;
+
+public class Rock extends Entity {
+    public Rock(Coordinates coordinates) {
+        super(coordinates);
+    }
+}
+
+package main.Entities;
+
+import main.utils.Coordinates;
+
+public class Tree extends Entity {
+    public Tree(Coordinates coordinates) {
+        super(coordinates);
+    }
+}
+package main.utils;
+
+import main.Entities.Creature;
+import main.Entities.Entity;
+import main.World;
+
+import java.nio.file.Path;
+import java.util.*;
+
+public class BFS {
+
+    private Map<Coordinates, Coordinates> bfs(Creature finder, World world) {
+        Coordinates start = finder.getCoordinates();
+        Class<?> targetClass = finder.getFoodType();
+
+        Deque<Coordinates> queue = new ArrayDeque<>();
+        Set<Coordinates> visited = new HashSet<>();
+        Map<Coordinates, Coordinates> cameFrom = new HashMap<>();
+
+        queue.add(start);
+        visited.add(start);
+
+        while (!queue.isEmpty()) {
+            Coordinates current = queue.poll();
+
+            for (Coordinates neighbor : world.getAvailableMoves(current, finder)) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                    cameFrom.put(neighbor, current);
+
+                    Entity entityAtNeighbor = world.getEntity(neighbor);
+                    if (entityAtNeighbor != null && targetClass.isInstance(entityAtNeighbor)) { // Используем isInstance
+                        return cameFrom;
+                    }
+                }
+            }
+        }
+        return new HashMap<>();
+    }
+
+    private List<Coordinates> pathfinder(Creature baseEntity, World world) {
+        Map<Coordinates, Coordinates> cameFrom = bfs(baseEntity, world);
+
+        if (cameFrom.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Coordinates targetCoordinates = null;
+        for (Coordinates coordinate : cameFrom.keySet()) {
+            Entity entity = world.getEntity(coordinate);
+            if (entity != null && baseEntity.getFoodType().isInstance(entity)) {
+                targetCoordinates = coordinate;
+                break;
+            }
+        }
+
+        if (targetCoordinates == null) {
+            return new ArrayList<>();
+        }
+
+        List<Coordinates> path = new ArrayList<>();
+        Coordinates current = targetCoordinates;
+
+        while (current != null && !current.equals(baseEntity.getCoordinates())) {
+            path.add(current);
+            current = cameFrom.get(current);
+        }
+
+        path.add(baseEntity.getCoordinates());
+        Collections.reverse(path);
+
+        return path;
+    }
+
+    public Coordinates nextStepFromPath(Creature baseEntity, World world) {
+        BFS bfs = new BFS();
+        List<Coordinates> path = bfs.pathfinder(baseEntity, world);
+
+        return !path.isEmpty() ? path.get(1) : null;
+    }
+}
+package main.utils;
+
+public class Coordinates {
+    public final int lines;
+    public final int columns;
+
+    public Coordinates(int x, int y) {
+        this.lines = x;
+        this.columns = y;
+    }
+
+    public Coordinates shift(int dx, int dy) {
+        return new Coordinates(lines + dx, columns + dy);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Coordinates that = (Coordinates) obj;
+        return lines == that.lines && columns == that.columns;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * lines + columns;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + lines + ", " + columns + ")";
+    }
+}
+package main.utils;
+
+public class PathNotFoundExeption extends RuntimeException{
+    public PathNotFoundExeption(String message) {
+        super(message);
+    }
+}
+package main.utils;
+
+import main.Entities.*;
+import main.SimulationConfig;
+import main.World;
+
+public class WorldRender {
+
+    public static final String PREDATOR_SPRITE = "\uD83E\uDD81";
+    public static final String HERBIVORE_SPRITE = "\uD83D\uDC07";
+    public static final String TREE_SPRITE = "\uD83C\uDF84";
+    public static final String GRASS_SPRITE = "\uD83C\uDF31";
+    public static final String ROCK_SPRITE = "\uD83E\uDEA8";
+    public static final String FREE_SQUARE = "\uD83D\uDFEB";
+
+    public static void worldRender(World world) {
+
+
+        for (int x = 0; x < SimulationConfig.WORLD_HEIGHT; x++) {
+            System.out.println();
+            for (int y = 0; y < SimulationConfig.WORLD_WIDTH; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                Entity tempCoordinates = world.getEntity(coordinates);
+                switch (tempCoordinates) {
+                    case Herbivore herbivore -> System.out.print(HERBIVORE_SPRITE);
+                    case Grass grass -> System.out.print(GRASS_SPRITE);
+                    case Tree tree -> System.out.print(TREE_SPRITE);
+                    case Rock rock -> System.out.print(ROCK_SPRITE);
+                    case Predator predator -> System.out.print(PREDATOR_SPRITE);
+                    case null, default -> System.out.print(FREE_SQUARE);
+                }
+
+            }
+
+        }
+        System.out.println();
+    }
+
+}
+package main;
+
+import main.Actions.InitialActions;
+import main.Entities.*;
+import main.utils.BFS;
+import main.utils.Coordinates;
+import main.utils.WorldRender;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class Simulation {
+
+    private final World world;
+    private final BFS bfs;
+    private final Random random = new Random();
+    public static int stepCount = 0;
+
+    public Simulation(World world) {
+        this.world = world;
+        this.bfs = new BFS();
+    }
+
+    public void runSimulation() {
+        WorldRender.worldRender(world);
+
+        while (true){
+            System.out.println();
+            System.out.println("Step: " + (stepCount++));
+
+            List<Creature> creatures = world.getAllCreatures();
+
+            for (Creature creature : creatures) {
+                if (world.containsEntity(creature)) {
+                    for (int i = 0; i < creature.getSpeed(); i++) {
+                        Coordinates nextStep = bfs.nextStepFromPath(creature, world);
+                        if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
+                            creature.makeMove(world, nextStep);
+                        } else {
+                            creature.makeRandomMove(world);
+                        }
+                    }
+                }
+            }
+
+            WorldRender.worldRender(world);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+
+    public static void main(String[] args) {
+        InitialActions initialActions = new InitialActions();
+        World world = initialActions.execute();
+        Simulation simulation = new Simulation(world);
+        simulation.runSimulation();
+    }
+}
+package main;
+
+public class SimulationConfig {
+    // x - это высота, а y - ширина
+    public static final int WORLD_WIDTH = 15;
+    public static final int WORLD_HEIGHT = 15;
+    public static final int GRASS_QUANTITY = 25;
+    public static final int ROCK_QUANTITY = 25;
+    public static final int TREE_QUANTITY = 5;
+    public static final int HERBIVORE_QUANTITY = 15;
+    public static final int PREDATOR_QUANTITY = 2;
+}
+package main;
+
+import main.Entities.*;
+import main.utils.Coordinates;
+
+import java.util.*;
+
+public class World {
+    public static final int WIDTH = SimulationConfig.WORLD_WIDTH;
+    public static final int HEIGHT = SimulationConfig.WORLD_HEIGHT;
+    private final Map<Coordinates, Entity> entities = new HashMap<>();
+
+
+    public Map<Coordinates, Entity> getEntities() {
+        // получение хэшмапы со всему сущностями в мире
+        return entities;
+    }
+
+
+    public void addEntity(Entity entity) {
+        entities.put(entity.getCoordinates(), entity);
+        if (entity instanceof Predator || entity instanceof Herbivore) {
+            System.out.println("Entity added: " + entity + " at " + entity.getCoordinates());
+        }
+    }
+
+    public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
+        // координаты находятся в пределах мира
+        if (!isCoordinateInMap(coordinates)) {
+            return false;
+        }
+
+        // клетка проходима для конкретного энтити
+        return isCellPassable(coordinates, creature);
+    }
+    public boolean containsEntity(Creature creature) {
+        return entities.containsValue(creature);
+    }
+
+    public void removeEntity(Coordinates coordinates) {
+        // удаление сущности
+        entities.remove(coordinates);
+    }
+
+    public Entity getEntity(Coordinates coordinates) {
+        // получение сущности по координатам
+        return entities.get(coordinates);
+    }
+
+    public void moveEntity(Coordinates from, Coordinates to, Entity entity) {
+        // тупое передвижение энтити из 1 координаты в другое, использую для премещения таргетов.
+        if (entities.get(from).equals(entity)) {
+            entities.remove(from);
+        }
+        entities.put(to, entity);
+    }
+
+
+    public boolean isCoordinateFree(Coordinates coordinates) {
+        // проверка на то что координата свободна
+        return !entities.containsKey(coordinates);
+    }
+
+    public boolean isCellPassable(Coordinates coordinates, Creature creature) {
+        // проверка на то что координата дотижима и в пределах карты
+        if (!isCoordinateInMap(coordinates)) {
+            return false;
+        }
+
+        Entity entity = entities.get(coordinates);
+        if (entity == null) {
+            return true;
+        }
+
+        if (creature instanceof Herbivore) {
+            return !(entity instanceof Tree || entity instanceof Predator || entity instanceof Rock || entity instanceof Herbivore);
+        } else if (creature instanceof Predator) {
+            return !(entity instanceof Tree || entity instanceof Rock || entity instanceof Predator);
+        }
+        return false;
+    }
+
+
+    public Coordinates makeRandomPositionForEntity() {
+        Random random = new Random();
+        Coordinates randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
+
+        while (!isCoordinateFree(randomCoordinateForFreeMove)) {
+            randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
+        }
+        return randomCoordinateForFreeMove;
+
+    }
+
+    public boolean isCoordinateInMap(Coordinates coordinates) {
+
+        return coordinates.lines >= 0 && coordinates.lines < HEIGHT && coordinates.columns >= 0 && coordinates.columns < WIDTH;
+    }
+
+    public List<Creature> getAllCreatures() {
+        return entities.values().stream()
+                .filter(entity -> entity instanceof Creature)
+                .map(entity -> (Creature) entity)
+                .toList();
+    }
+
+    public List<Coordinates> getAvailableMoves(Coordinates coordinates, Creature creature) {
+        List<Coordinates> moves = Arrays.asList(
+                coordinates.shift(0, 1),
+                coordinates.shift(0, -1),
+                coordinates.shift(1, 0),
+                coordinates.shift(-1, 0)
+        );
+
+        List<Coordinates> validMoves = new ArrayList<>();
+        for (Coordinates move : moves) {
+            if (isCoordinateInMap(move) && isCellPassable(move, creature)) { // Используем isCellPassable
+                validMoves.add(move);
+            }
+        }
+        return validMoves;
+    }
+}

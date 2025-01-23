@@ -10,7 +10,7 @@ import java.util.*;
 public class BFS {
 
     private Map<Coordinates, Coordinates> bfs(Creature finder, World world) {
-        Coordinates start = finder.getCoordinates();
+        Coordinates start = world.getCoordinates(finder);
         Class<?> targetClass = finder.getFoodType();
 
         Deque<Coordinates> queue = new ArrayDeque<>();
@@ -62,12 +62,12 @@ public class BFS {
         List<Coordinates> path = new ArrayList<>();
         Coordinates current = targetCoordinates;
 
-        while (current != null && !current.equals(baseEntity.getCoordinates())) {
+        while (current != null && !current.equals(world.getCoordinates(baseEntity))) {
             path.add(current);
             current = cameFrom.get(current);
         }
 
-        path.add(baseEntity.getCoordinates());
+        path.add(world.getCoordinates(baseEntity));
         Collections.reverse(path);
 
         return path;

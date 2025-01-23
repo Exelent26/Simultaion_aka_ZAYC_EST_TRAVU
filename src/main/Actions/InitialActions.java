@@ -22,22 +22,27 @@ public class InitialActions implements Action {
     private void createEntities(World world) {
         for (int i = 0; i < SimulationConfig.HERBIVORE_QUANTITY; i++) {
             Coordinates temp = world.makeRandomPositionForEntity();
-            Herbivore herbivore = new Herbivore(temp);
-            world.addEntity(herbivore);
+            Herbivore herbivore = new Herbivore();
+            world.addEntity(herbivore, temp);
         }
+
         for (int i = 0; i < SimulationConfig.GRASS_QUANTITY; i++) {
-            world.addEntity(new Grass(world.makeRandomPositionForEntity()));
+            Coordinates temp = world.makeRandomPositionForEntity();
+            Grass grass = new Grass();
+            world.addEntity(grass, temp);
         }
         for (int i = 0; i < SimulationConfig.TREE_QUANTITY; i++) {
-            world.addEntity(new Tree(world.makeRandomPositionForEntity()));
+            Coordinates temp = world.makeRandomPositionForEntity();
+            world.addEntity(new Tree(), temp);
         }
         for (int i = 0; i < SimulationConfig.ROCK_QUANTITY; i++) {
-            world.addEntity(new Rock(world.makeRandomPositionForEntity()));
+            Coordinates temp = world.makeRandomPositionForEntity();
+            world.addEntity(new Rock(), temp);
         }
         for (int i = 0; i < SimulationConfig.PREDATOR_QUANTITY; i++) {
             Coordinates temp = world.makeRandomPositionForEntity();
             Predator predator = new Predator(temp);
-            world.addEntity(predator);
+            world.addEntity(predator, temp);
         }
     }
 

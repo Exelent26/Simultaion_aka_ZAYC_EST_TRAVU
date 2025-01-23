@@ -17,11 +17,21 @@ public class World {
     }
 
 
-    public void addEntity(Entity entity) {
-        entities.put(entity.getCoordinates(), entity);
+    public void addEntity(Entity entity, Coordinates coordinates) {
+        entities.put(coordinates, entity);
         if (entity instanceof Predator || entity instanceof Herbivore) {
-            System.out.println("Entity added: " + entity + " at " + entity.getCoordinates());
+            System.out.println("Entity added: " + entity + " at " + coordinates);
         }
+    }
+
+    public Coordinates getCoordinates(Entity entity) {
+        for (Map.Entry<Coordinates, Entity> entry : entities.entrySet()) {
+            if (entry.getValue() == entity) {
+                return entry.getKey();
+            }
+        }
+        throw new EntityNotFoundException("Entity not found in the world.");
+
     }
 
     public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
@@ -33,6 +43,7 @@ public class World {
         // клетка проходима для конкретного энтити
         return isCellPassable(coordinates, creature);
     }
+
     public boolean containsEntity(Creature creature) {
         return entities.containsValue(creature);
     }

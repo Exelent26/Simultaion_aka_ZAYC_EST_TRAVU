@@ -8,11 +8,10 @@ import java.util.Random;
 
 public abstract class Creature extends Entity {
     protected final Class<?> foodType;
-    protected int health;
-    public  int speed;
+    public int health;
+    public int speed;
 
-    public Creature(Class<?> foodType, Coordinates coordinates, int health, int speed) {
-        super(coordinates);
+    public Creature(Class<?> foodType, int health, int speed) {
         this.foodType = foodType;
         this.health = health;
         this.speed = speed;
@@ -27,13 +26,17 @@ public abstract class Creature extends Entity {
     }
 
     public void makeRandomMove(World world) {
-        List<Coordinates> availableMoves = world.getAvailableMoves(coordinates, this);
+        Coordinates currentCoordinates = world.getCoordinates(this);
+        List<Coordinates> availableMoves = world.getAvailableMoves(currentCoordinates, this);
         if (!availableMoves.isEmpty()) {
-            Random rand = new Random();
-            Coordinates randomMove = availableMoves.get(rand.nextInt(availableMoves.size()));
+            Coordinates randomMove = availableMoves.get(new Random().nextInt(availableMoves.size()));
             makeStep(world, randomMove);
-            System.out.println("Random moving entity " + this + " from " + this.coordinates + " to " + randomMove);
+            System.out.println("Random moving entity " + this + " from " + currentCoordinates + " to " + randomMove);
         }
+    }
+    public boolean isDead(Creature creature) {
+        return creature.health <= 0;
+
     }
 
     public void makeStep(World world, Coordinates nextStep) {
@@ -43,9 +46,9 @@ public abstract class Creature extends Entity {
             interactWithEntity(world, targetEntity, nextStep);
         }
 
+        Coordinates currentCoordinates = world.getCoordinates(this);
         if (world.isCellPassable(nextStep, this)) {
-            world.moveEntity(this.coordinates, nextStep, this);
-            this.coordinates = nextStep;
+            world.moveEntity(currentCoordinates, nextStep, this);
         }
     }
 

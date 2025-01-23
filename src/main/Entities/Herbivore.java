@@ -9,8 +9,8 @@ public class Herbivore extends Creature {
 
     private int prepareToEatCounter = 0;
 
-    public Herbivore(Coordinates coordinates) {
-        super(Grass.class, coordinates, 20, 1);
+    public Herbivore() {
+        super(Grass.class, 20, 1);
     }
 
     @Override
@@ -19,8 +19,8 @@ public class Herbivore extends Creature {
             makeRandomMove(world);
             return;
         }
-
-        System.out.println("Moving entity " + this + " from " + this.coordinates + " to " + nextStep);
+        Coordinates currentCoordinates = world.getCoordinates(this);
+        System.out.println("Moving entity " + this + " from " + currentCoordinates + " to " + nextStep);
         makeStep(world, nextStep);
 
         //processInteraction(world, nextStep); возможно лишний метод дублирование makeStep
