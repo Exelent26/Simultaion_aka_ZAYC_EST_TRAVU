@@ -1,4 +1,4 @@
-package main.Entities;
+package main.exeptions;
 
 public class EntityNotFoundException extends RuntimeException {
         public EntityNotFoundException(String message) {

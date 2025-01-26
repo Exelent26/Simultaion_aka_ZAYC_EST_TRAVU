@@ -1,6 +1,7 @@
 package main;
 
 import main.Entities.*;
+import main.exeptions.EntityNotFoundException;
 import main.utils.Coordinates;
 
 import java.util.*;
@@ -9,6 +10,8 @@ public class World {
     public static final int WIDTH = SimulationConfig.WORLD_WIDTH;
     public static final int HEIGHT = SimulationConfig.WORLD_HEIGHT;
     private final Map<Coordinates, Entity> entities = new HashMap<>();
+    private final List<Coordinates> entitiesToRemove = new ArrayList<>();
+
 
 
     public Map<Coordinates, Entity> getEntities() {
@@ -34,9 +37,39 @@ public class World {
 
     }
 
+    public void markForRemoval(Coordinates coordinates) {
+        if (!entitiesToRemove.contains(coordinates)) {
+            entitiesToRemove.add(coordinates);
+        }
+    }
+
+    public void cleanupDeadEntities() {
+        for (Map.Entry<Coordinates, Entity> entry : entities.entrySet()) {
+            Coordinates coordinates = entry.getKey();
+            Entity entity = entry.getValue();
+
+            if (entity instanceof Creature creature && creature.isDead()) {
+                markForRemoval(coordinates);
+            }
+            else if (entity instanceof Grass grass && grass.isEaten()) {
+                markForRemoval(coordinates);
+            }
+        }
+        for (Coordinates coordinates : entitiesToRemove) {
+            Entity removed = entities.remove(coordinates);
+            System.out.println("Removed entity: " + removed + " from " + coordinates);
+        }
+
+        entitiesToRemove.clear();
+    }
+
     public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
         // координаты находятся в пределах мира
         if (!isCoordinateInMap(coordinates)) {
+            return false;
+        }
+
+        if (entitiesToRemove.contains(coordinates)) {
             return false;
         }
 
@@ -60,6 +93,10 @@ public class World {
 
     public void moveEntity(Coordinates from, Coordinates to, Entity entity) {
         // тупое передвижение энтити из 1 координаты в другое, использую для премещения таргетов.
+        if (entitiesToRemove.contains(to)) {
+            System.out.println("Cannot move entity " + entity + " to " + to + ". Cell is marked for removal.");
+            return;
+        }
         if (entities.get(from).equals(entity)) {
             entities.remove(from);
         }
@@ -86,7 +123,7 @@ public class World {
         if (creature instanceof Herbivore) {
             return !(entity instanceof Tree || entity instanceof Predator || entity instanceof Rock || entity instanceof Herbivore);
         } else if (creature instanceof Predator) {
-            return !(entity instanceof Tree || entity instanceof Rock || entity instanceof Predator);
+            return !(entity instanceof Tree || entity instanceof Rock || entity instanceof Predator || entity instanceof Grass);
         }
         return false;
     }

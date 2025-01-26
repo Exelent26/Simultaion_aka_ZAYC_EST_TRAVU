@@ -1,7 +1,13 @@
 package main.Entities;
 
 public class Grass extends Entity {
-    public Grass() {
+    private boolean eaten = false;
+    public boolean isEaten() {
+        return eaten;
+    }
 
+    public void markAsEaten() {
+        eaten = true;
     }
 }
+

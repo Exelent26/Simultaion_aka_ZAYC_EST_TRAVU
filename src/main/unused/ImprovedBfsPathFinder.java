@@ -2,7 +2,7 @@
 package main.unused;
 
 import main.Entities.Entity;
-import main.Entities.EntityNotFoundException;
+import main.exeptions.EntityNotFoundException;
 import main.World;
 import main.utils.Coordinates;
 

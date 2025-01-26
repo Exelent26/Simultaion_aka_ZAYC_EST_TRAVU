@@ -31,18 +31,26 @@ public class Simulation {
 
             List<Creature> creatures = world.getAllCreatures();
 
+
             for (Creature creature : creatures) {
-                if (world.containsEntity(creature)) {
-                    for (int i = 0; i < creature.getSpeed(); i++) {
-                        Coordinates nextStep = bfs.nextStepFromPath(creature, world);
-                        if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
-                            creature.makeMove(world, nextStep);
-                        } else {
-                            creature.makeRandomMove(world);
+
+                if (world.containsEntity(creature) && creature.alive) {
+                    creature.increaseHunger(); // Увеличиваем голод перед каждым ходом
+
+                    if (!creature.isDead()) { // Если существо живо, оно может двигаться
+                        for (int i = 0; i < creature.getSpeed(); i++) {
+                            Coordinates nextStep = bfs.nextStepFromPath(creature, world);
+                            if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
+                                creature.makeMove(world, nextStep);
+                            } else {
+                                creature.makeRandomMove(world);
+                            }
                         }
                     }
                 }
             }
+
+            world.cleanupDeadEntities();
 
             WorldRender.worldRender(world);
             try {

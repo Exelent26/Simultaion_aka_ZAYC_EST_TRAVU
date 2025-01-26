@@ -10,11 +10,19 @@ public abstract class Creature extends Entity {
     protected final Class<?> foodType;
     public int health;
     public int speed;
+    public boolean alive;
+    public int hunger;
+    public int maxHunger;
+    public int maxHealth;
 
-    public Creature(Class<?> foodType, int health, int speed) {
+    public Creature(Class<?> foodType, int health, int speed,int maxHunger) {
         this.foodType = foodType;
         this.health = health;
         this.speed = speed;
+        this.alive = true;
+        this.hunger = 0;
+        this.maxHunger = maxHunger;
+        this.alive = true;
     }
 
     public Class<?> getFoodType() {
@@ -34,10 +42,38 @@ public abstract class Creature extends Entity {
             System.out.println("Random moving entity " + this + " from " + currentCoordinates + " to " + randomMove);
         }
     }
-    public boolean isDead(Creature creature) {
-        return creature.health <= 0;
+
+    public boolean isDead() {
+        return this.health <= 0;
 
     }
+    public void increaseHunger() {
+        hunger++;
+        if (hunger >= maxHunger) {
+            hunger = maxHunger;
+            health--; // Уменьшаем здоровье из-за сильного голода
+            System.out.println(this + " is starving! Health: " + health);
+            if (health <= 0) {
+                alive = false;
+            }
+        }
+    }
+    public void eat(int hungerRestoration, int healthRestoration) {
+        hunger = Math.max(hunger - hungerRestoration, 0); // Уменьшаем голод
+        health = Math.min(health + healthRestoration, maxHealth); // Восстанавливаем здоровье
+        System.out.println(this + " eats and restores hunger to " + hunger + " and health to " + health);
+    }
+
+
+
+    protected void markAsDead(World world) {
+        if (isDead()) {
+            Coordinates coordinates = world.getCoordinates(this);
+            world.markForRemoval(coordinates);
+            this.alive = false;
+        }
+    }
+
 
     public void makeStep(World world, Coordinates nextStep) {
         Entity targetEntity = world.getEntity(nextStep);
