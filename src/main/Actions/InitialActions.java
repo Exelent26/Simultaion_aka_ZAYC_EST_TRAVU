@@ -1,6 +1,7 @@
 package main.Actions;
 
 import main.Entities.*;
+import main.EntitySpawnConfig;
 import main.SimulationConfig;
 import main.World;
 import main.utils.Coordinates;
@@ -8,15 +9,17 @@ import main.utils.Coordinates;
 public class InitialActions implements Action {
 
 
-    @Override
-    public World execute() {
-        World world = new World();
-        createEntities(world);
-        return world;
+
+    public void execute(World world) {
+
+        for(EntitySpawnConfig entitySpawnConfig : EntitySpawnConfig.values()) {
+            SpawnAction spawnAction = new SpawnAction(entitySpawnConfig);
+            spawnAction.execute(world);
+        }
     }
 
-    @Override
-    public void execute(World world) {
+    //@Override
+    /*public void execute() {
     }
 
     private void createEntities(World world) {
@@ -41,11 +44,11 @@ public class InitialActions implements Action {
         }
         for (int i = 0; i < SimulationConfig.PREDATOR_QUANTITY; i++) {
             Coordinates temp = world.makeRandomPositionForEntity();
-            Predator predator = new Predator(temp);
+            Predator predator = new Predator();
             world.addEntity(predator, temp);
         }
     }
-
+*/
 
 
 }

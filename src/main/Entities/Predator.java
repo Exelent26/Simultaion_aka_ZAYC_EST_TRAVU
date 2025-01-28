@@ -8,7 +8,7 @@ import java.util.List;
 public class Predator extends Creature {
     private final int attackPower = 10;
 
-    public Predator(Coordinates coordinates) {
+    public Predator() {
         super(Herbivore.class, 25, 2,25);
     }
 

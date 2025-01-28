@@ -7,25 +7,26 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class Creature extends Entity {
-    protected final Class<?> foodType;
+    protected final Class<? extends Entity> foodType;
     public int health;
     public int speed;
     public boolean alive;
     public int hunger;
-    public int maxHunger;
+    public int maxHungerLvl;
     public int maxHealth;
 
-    public Creature(Class<?> foodType, int health, int speed,int maxHunger) {
+    public Creature(Class<? extends Entity> foodType, int health, int speed,int maxHunger) {
         this.foodType = foodType;
         this.health = health;
         this.speed = speed;
         this.alive = true;
         this.hunger = 0;
-        this.maxHunger = maxHunger;
+        this.maxHungerLvl = maxHunger;
         this.alive = true;
+        this.maxHealth = health;
     }
 
-    public Class<?> getFoodType() {
+    public Class<? extends Entity> getFoodType() {
         return foodType;
     }
 
@@ -49,8 +50,8 @@ public abstract class Creature extends Entity {
     }
     public void increaseHunger() {
         hunger++;
-        if (hunger >= maxHunger) {
-            hunger = maxHunger;
+        if (hunger >= maxHungerLvl) {
+            hunger = maxHungerLvl;
             health--; // Уменьшаем здоровье из-за сильного голода
             System.out.println(this + " is starving! Health: " + health);
             if (health <= 0) {

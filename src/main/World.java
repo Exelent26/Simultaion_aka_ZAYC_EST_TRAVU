@@ -1,6 +1,7 @@
 package main;
 
 import main.Entities.*;
+import main.exeptions.CoordinateNotValidException;
 import main.exeptions.EntityNotFoundException;
 import main.utils.Coordinates;
 
@@ -131,12 +132,14 @@ public class World {
 
     public Coordinates makeRandomPositionForEntity() {
         Random random = new Random();
-        Coordinates randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
+        Coordinates randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
 
-        while (!isCoordinateFree(randomCoordinateForFreeMove)) {
-            randomCoordinateForFreeMove = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
+        while (!isCoordinateFree(randomCoordinateForEntity) && !isCoordinateInMap(randomCoordinateForEntity)) {
+            randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
         }
-        return randomCoordinateForFreeMove;
+
+            return randomCoordinateForEntity;
+
 
     }
 
@@ -168,4 +171,12 @@ public class World {
         }
         return validMoves;
     }
+
+    public int getHight() {
+        return SimulationConfig.WORLD_HEIGHT;
+    }
+
+    public int getWidth() {
+
+    return SimulationConfig.WORLD_WIDTH;}
 }

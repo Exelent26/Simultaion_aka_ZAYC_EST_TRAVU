@@ -12,20 +12,21 @@ import java.util.Random;
 
 public class Simulation {
 
-    private final World world;
+
     private final BFS bfs;
     private final Random random = new Random();
     public static int stepCount = 0;
 
-    public Simulation(World world) {
-        this.world = world;
+    public Simulation() {
+
         this.bfs = new BFS();
     }
 
-    public void runSimulation() {
+    public void runSimulation(World world) {
+
         WorldRender.worldRender(world);
 
-        while (true){
+        while (true) {
             System.out.println();
             System.out.println("Step: " + (stepCount++));
 
@@ -39,10 +40,13 @@ public class Simulation {
 
                     if (!creature.isDead()) { // Если существо живо, оно может двигаться
                         for (int i = 0; i < creature.getSpeed(); i++) {
-                            Coordinates nextStep = bfs.nextStepFromPath(creature, world);
-                            if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
-                                creature.makeMove(world, nextStep);
-                            } else {
+                            List<Coordinates> path = bfs.getPath(world, world.getCoordinates(creature), creature.getFoodType());
+                            if (!path.isEmpty()) {
+                                Coordinates nextStep = path.get(1);
+                                if (nextStep != null && world.isCellAvailable(nextStep, creature)) {
+                                    creature.makeMove(world, nextStep);
+                                }
+                            }else {
                                 creature.makeRandomMove(world);
                             }
                         }
@@ -63,11 +67,11 @@ public class Simulation {
     }
 
 
-
     public static void main(String[] args) {
+        World world = new World();
         InitialActions initialActions = new InitialActions();
-        World world = initialActions.execute();
-        Simulation simulation = new Simulation(world);
-        simulation.runSimulation();
+        initialActions.execute(world);
+        Simulation simulation = new Simulation();
+        simulation.runSimulation(world);
     }
 }
