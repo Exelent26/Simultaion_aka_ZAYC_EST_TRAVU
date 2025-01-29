@@ -1,8 +1,8 @@
 package main;
 
 import main.Entities.*;
-import main.exeptions.CoordinateNotValidException;
 import main.exeptions.EntityNotFoundException;
+import main.exeptions.NoFreeCoordinatesException;
 import main.utils.Coordinates;
 
 import java.util.*;
@@ -132,14 +132,17 @@ public class World {
 
     public Coordinates makeRandomPositionForEntity() {
         Random random = new Random();
+
         Coordinates randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
 
-        while (!isCoordinateFree(randomCoordinateForEntity) && !isCoordinateInMap(randomCoordinateForEntity)) {
-            randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
-        }
-
+        try {
+            while (!isCoordinateFree(randomCoordinateForEntity)) {
+                randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
+            }
             return randomCoordinateForEntity;
-
+        } catch (NoFreeCoordinatesException e) {
+            throw new NoFreeCoordinatesException("No free coordinates found.");
+        }
 
     }
 

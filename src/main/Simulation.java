@@ -1,25 +1,26 @@
 package main;
 
+import main.Actions.DeadCreaturesRemoverAction;
 import main.Actions.InitialActions;
+import main.Actions.SimulationActions;
 import main.Entities.*;
 import main.utils.BFS;
 import main.utils.Coordinates;
 import main.utils.WorldRender;
+import main.Actions.*;
+
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 public class Simulation {
 
 
-    private final BFS bfs;
-    private final Random random = new Random();
-    public static int stepCount = 0;
+    public  int stepCount = 0;
 
     public Simulation() {
 
-        this.bfs = new BFS();
     }
 
     public void runSimulation(World world) {
@@ -27,18 +28,29 @@ public class Simulation {
         WorldRender.worldRender(world);
 
         while (true) {
+
             System.out.println();
             System.out.println("Step: " + (stepCount++));
+            List<Action> actions = Arrays.asList(new SimulationActions(), new DeadCreaturesRemoverAction());
+            for (Action action : actions) {
+                action.execute(world);
+            }
 
-            List<Creature> creatures = world.getAllCreatures();
+            WorldRender.worldRender(world);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
+            /*List<Creature> creatures = world.getAllCreatures();
+            BFS bfs = new BFS();
 
             for (Creature creature : creatures) {
-
                 if (world.containsEntity(creature) && creature.alive) {
-                    creature.increaseHunger(); // Увеличиваем голод перед каждым ходом
+                    creature.increaseHunger();
 
-                    if (!creature.isDead()) { // Если существо живо, оно может двигаться
+                    if (!creature.isDead()) {
                         for (int i = 0; i < creature.getSpeed(); i++) {
                             List<Coordinates> path = bfs.getPath(world, world.getCoordinates(creature), creature.getFoodType());
                             if (!path.isEmpty()) {
@@ -62,7 +74,7 @@ public class Simulation {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+*/
         }
     }
 

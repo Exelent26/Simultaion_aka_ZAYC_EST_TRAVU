@@ -2,7 +2,7 @@ package main.Actions;
 
 import main.World;
 
-interface Action {
+public interface Action {
     void execute(World world);
 
 

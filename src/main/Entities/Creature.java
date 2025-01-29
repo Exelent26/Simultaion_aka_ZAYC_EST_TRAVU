@@ -22,7 +22,6 @@ public abstract class Creature extends Entity {
         this.alive = true;
         this.hunger = 0;
         this.maxHungerLvl = maxHunger;
-        this.alive = true;
         this.maxHealth = health;
     }
 
@@ -59,9 +58,9 @@ public abstract class Creature extends Entity {
             }
         }
     }
-    public void eat(int hungerRestoration, int healthRestoration) {
-        hunger = Math.max(hunger - hungerRestoration, 0); // Уменьшаем голод
-        health = Math.min(health + healthRestoration, maxHealth); // Восстанавливаем здоровье
+    public void eatTarget(int hungerRestoration, int healthRestoration) {
+        hunger = Math.max(hunger - hungerRestoration, 0);
+        health = Math.min(health + healthRestoration, maxHealth);
         System.out.println(this + " eats and restores hunger to " + hunger + " and health to " + health);
     }
 
@@ -82,20 +81,12 @@ public abstract class Creature extends Entity {
         if (targetEntity != null && canInteract(targetEntity)) {
             interactWithEntity(world, targetEntity, nextStep);
         }
-
         Coordinates currentCoordinates = world.getCoordinates(this);
         if (world.isCellPassable(nextStep, this)) {
             world.moveEntity(currentCoordinates, nextStep, this);
         }
     }
 
-    /*public void processInteraction(World world, Coordinates target) {
-        Entity entity = world.getEntity(target);
-        if (entity != null && canInteract(entity)) {
-            System.out.println("Interacting with entity at " + target + ": " + entity);
-            interactWithEntity(world, entity, target);
-        }
-    }*/
 
     protected abstract void interactWithEntity(World world, Entity entity, Coordinates target);
 

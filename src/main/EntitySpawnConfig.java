@@ -8,27 +8,27 @@ public enum EntitySpawnConfig {
 
     HERBIVORE(
             () -> new Herbivore(),
-            0.03,
-            1
+            4,
+            3
     ),
     PREDATOR(
             () -> new Predator(),
-            0.01,
-            1
+            1,
+            2
     ),
     GRASS(
             () -> new Grass(),
-            0.1,
+            20,
             1
     ),
     ROCK(
             () -> new Rock(),
-            0.05,
+            7,
             1
     ),
     TREE(
             () -> new Tree(),
-            0.03,
+            5,
             1
     )
     ;

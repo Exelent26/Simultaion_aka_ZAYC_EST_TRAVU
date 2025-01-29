@@ -3,8 +3,6 @@ package main.Entities;
 import main.World;
 import main.utils.Coordinates;
 
-import java.util.List;
-
 public class Herbivore extends Creature {
 
     private int prepareToEatCounter = 0;
@@ -84,7 +82,7 @@ public class Herbivore extends Creature {
                 // Если трава ещё не съедена, помечаем её как съеденную
                 grass.markAsEaten();
                 world.markForRemoval(targetCoordinates); // Помечаем для удаления
-                eat(25, 15); // Восстанавливаем голод и здоровье
+                eatTarget(25, 15); // Восстанавливаем голод и здоровье
                 prepareToEatCounter = 0; // Сбрасываем счётчик подготовки
                 System.out.println(this + " ate grass at " + targetCoordinates);
             } else if (!grass.isEaten() && prepareToEatCounter == 0) {
