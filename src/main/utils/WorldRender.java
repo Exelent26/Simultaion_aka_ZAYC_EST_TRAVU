@@ -1,7 +1,7 @@
 package main.utils;
 
 import main.Entities.*;
-import main.SimulationConfig;
+import main.Configs.SimulationConfig;
 import main.World;
 
 public class WorldRender {

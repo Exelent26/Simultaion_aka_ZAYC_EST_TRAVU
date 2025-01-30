@@ -1,5 +1,6 @@
 package main.Actions;
 
+import main.Configs.CreatureAndGrassRespawnConfig;
 import main.Entities.Creature;
 import main.World;
 import main.utils.BFS;
@@ -13,6 +14,10 @@ public class SimulationActions implements Action {
     @Override
     public void execute(World world) {
 
+        for(CreatureAndGrassRespawnConfig config: CreatureAndGrassRespawnConfig.values()) {
+            ReSpawnAction respawnAction = new ReSpawnAction(config);
+            respawnAction.execute(world);
+        }
 
         List<Creature> creatures = world.getAllCreatures();
         BFS bfs = new BFS();

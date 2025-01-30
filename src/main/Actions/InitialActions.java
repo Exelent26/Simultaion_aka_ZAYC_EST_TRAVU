@@ -1,10 +1,7 @@
 package main.Actions;
 
-import main.Entities.*;
-import main.EntitySpawnConfig;
-import main.SimulationConfig;
+import main.Configs.EntitySpawnConfig;
 import main.World;
-import main.utils.Coordinates;
 
 public class InitialActions implements Action {
 

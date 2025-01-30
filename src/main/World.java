@@ -1,5 +1,6 @@
 package main;
 
+import main.Configs.SimulationConfig;
 import main.Entities.*;
 import main.exeptions.EntityNotFoundException;
 import main.exeptions.NoFreeCoordinatesException;
@@ -18,6 +19,10 @@ public class World {
     public Map<Coordinates, Entity> getEntities() {
         // получение хэшмапы со всему сущностями в мире
         return entities;
+    }
+
+    public List<Entity> getListOfEntities() {
+        return new ArrayList<>(entities.values());
     }
 
 
@@ -62,6 +67,9 @@ public class World {
         }
 
         entitiesToRemove.clear();
+    }
+    public int getWorldSquare(){
+        return WIDTH*HEIGHT;
     }
 
     public boolean isCellAvailable(Coordinates coordinates, Creature creature) {

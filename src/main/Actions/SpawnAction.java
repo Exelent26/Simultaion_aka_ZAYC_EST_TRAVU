@@ -2,7 +2,7 @@ package main.Actions;
 
 import main.Entities.Entity;
 import main.EntityQuantityCalculator;
-import main.EntitySpawnConfig;
+import main.Configs.EntitySpawnConfig;
 import main.World;
 import main.utils.Coordinates;
 
@@ -15,7 +15,7 @@ public class SpawnAction implements Action {
 
     @Override
     public void execute(World world) {
-        int worldSquare = world.getWidth() * world.getHight();
+        int worldSquare = world.getWorldSquare();
         int quantity = EntityQuantityCalculator.calculateQuantity(
                 worldSquare,
                 spawnConfig.getPercentOfMap(),
@@ -25,9 +25,6 @@ public class SpawnAction implements Action {
             Coordinates coordinatesForSpawn = world.makeRandomPositionForEntity();
             world.addEntity(entityToWorld, coordinatesForSpawn);
         }
-
-
-
     }
 
 }

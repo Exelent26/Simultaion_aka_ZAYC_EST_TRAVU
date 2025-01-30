@@ -23,7 +23,7 @@ public class ConsoleCleaner {
 package main.Actions;
 
 import main.Entities.*;
-import main.SimulationConfig;
+import main.Configs.SimulationConfig;
 import main.World;
 import main.utils.Coordinates;
 
@@ -427,7 +427,7 @@ public class PathNotFoundExeption extends RuntimeException{
 package main.utils;
 
 import main.Entities.*;
-import main.SimulationConfig;
+import main.Configs.SimulationConfig;
 import main.World;
 
 public class WorldRender {

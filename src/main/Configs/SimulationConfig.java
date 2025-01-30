@@ -1,4 +1,4 @@
-package main;
+package main.Configs;
 
 public class SimulationConfig {
     // x - это высота, а y - ширина

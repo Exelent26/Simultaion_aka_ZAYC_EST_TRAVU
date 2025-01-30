@@ -1,4 +1,4 @@
-package main;
+package main.Configs;
 
 import main.Entities.*;
 
@@ -18,7 +18,7 @@ public enum EntitySpawnConfig {
     ),
     GRASS(
             () -> new Grass(),
-            20,
+            12,
             1
     ),
     ROCK(
@@ -34,10 +34,11 @@ public enum EntitySpawnConfig {
     ;
 
     private final Supplier<Entity> supplier;
-    private final double percentOfMap;
+    private final int percentOfMap;
     private final int minimumOfEntityType;
 
-    EntitySpawnConfig(Supplier<Entity> supplier, double percentOfMap, int minimumOfEntityType) {
+
+    EntitySpawnConfig(Supplier<Entity> supplier, int percentOfMap, int minimumOfEntityType) {
         this.supplier = supplier;
         this.minimumOfEntityType = minimumOfEntityType;
         this.percentOfMap = percentOfMap;
