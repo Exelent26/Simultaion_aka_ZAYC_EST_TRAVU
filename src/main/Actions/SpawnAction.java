@@ -1,7 +1,7 @@
 package main.Actions;
 
 import main.Entities.Entity;
-import main.EntityQuantityCalculator;
+import main.utils.EntityQuantityCalculator;
 import main.Configs.EntitySpawnConfig;
 import main.World;
 import main.utils.Coordinates;

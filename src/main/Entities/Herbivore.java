@@ -8,22 +8,10 @@ public class Herbivore extends Creature {
     private int prepareToEatCounter = 0;
 
     public Herbivore() {
-        super(Grass.class, 25, 1,15);
+        super(Grass.class, 25, 1,5);
     }
 
     @Override
-    /*public void makeMove(World world, Coordinates nextStep) {
-        if (nextStep == null) {
-            makeRandomMove(world);
-
-        }else {
-            Coordinates currentCoordinates = world.getCoordinates(this);
-            System.out.println("Moving entity " + this + " from " + currentCoordinates + " to " + nextStep);
-            makeStep(world, nextStep);
-        }
-
-        //processInteraction(world, nextStep); возможно лишний метод дублирование makeStep
-    }*/
     public void makeMove(World world, Coordinates nextStep) {
         if(!alive){
             return;
@@ -43,38 +31,7 @@ public class Herbivore extends Creature {
     }
 
 
-    /*@Override*/
-    /*protected void interactWithEntity(World world, Entity entity, Coordinates target) {
-        if (entity != null) {
-            List<Coordinates> adjacentCoordinates = world.getAvailableMoves(target, this);
-            for (Coordinates adjacentCoordinate : adjacentCoordinates) {
-                Entity adjacentEntity = world.getEntity(adjacentCoordinate);
-                if (adjacentEntity instanceof Grass) {
-                    if (prepareToEatCounter == 0) {
-                        prepareToEatCounter++;
-                        System.out.println(this+ " gotov kushat' travu");
-                    } else if (prepareToEatCounter == 1) {
-                        world.removeEntity(adjacentCoordinate);
-                        System.out.println(this + " skushal travu");
-                        prepareToEatCounter = 0;
-                        makeStep(world, adjacentCoordinate);
-                    }
-                }
-            }
 
-        }
-    }*/
-    /*protected void interactWithEntity(World world, Entity entity, Coordinates targetCoordinates) {
-        Entity target = world.getEntity(targetCoordinates);
-        if(target instanceof Grass && prepareToEatCounter == 0) {
-            prepareToEatCounter++;
-            System.out.println(this+ " gotov kushat' travu");
-        }
-        else if(target instanceof Grass && prepareToEatCounter == 1){
-            world.removeEntity(targetCoordinates);
-            System.out.println("Herbivore " + this + " eat  "+ target + targetCoordinates);
-        }
-    }*/
     @Override
     protected void interactWithEntity(World world, Entity entity, Coordinates targetCoordinates) {
         if (entity instanceof Grass grass) {

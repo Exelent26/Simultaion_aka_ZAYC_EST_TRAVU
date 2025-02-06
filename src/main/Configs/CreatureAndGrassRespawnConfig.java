@@ -10,22 +10,22 @@ public enum CreatureAndGrassRespawnConfig {
     HERBIVORE(
             () -> new Herbivore(),
             Herbivore.class,
-            0.7,
+            3,
             0,
-            2
+            6
     ),
     PREDATOR(
             () -> new Predator(),
             Predator.class,
-            0.1,
+            1,
             0,
             1),
     GRASS(
             () -> new Grass(),
             Grass.class,
-            1,
-            1,
-            5);
+            5,
+            3,
+            10);
 
     private final Supplier<Entity> supplier;
     private final Class<? extends Entity> entityClass;

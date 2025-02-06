@@ -1,7 +1,6 @@
 package main.utils;
 
 import main.Entities.*;
-import main.Configs.SimulationConfig;
 import main.World;
 
 public class WorldRender {
@@ -13,12 +12,12 @@ public class WorldRender {
     public static final String ROCK_SPRITE = "\uD83E\uDEA8";
     public static final String FREE_SQUARE = "\uD83D\uDFEB";
 
-    public static void worldRender(World world) {
+    public void render(World world) {
 
 
-        for (int x = 0; x < SimulationConfig.WORLD_HEIGHT; x++) {
+        for (int x = 0; x < world.getHight(); x++) {
             System.out.println();
-            for (int y = 0; y < SimulationConfig.WORLD_WIDTH; y++) {
+            for (int y = 0; y < world.getWidth(); y++) {
                 Coordinates coordinates = new Coordinates(x, y);
                 Entity tempCoordinates = world.getEntity(coordinates);
                 switch (tempCoordinates) {
@@ -27,7 +26,8 @@ public class WorldRender {
                     case Tree tree -> System.out.print(TREE_SPRITE);
                     case Rock rock -> System.out.print(ROCK_SPRITE);
                     case Predator predator -> System.out.print(PREDATOR_SPRITE);
-                    case null, default -> System.out.print(FREE_SQUARE);
+                    case null -> System.out.print(FREE_SQUARE);
+                    default -> throw new IllegalStateException("Unexpected value: " + tempCoordinates);
                 }
 
             }

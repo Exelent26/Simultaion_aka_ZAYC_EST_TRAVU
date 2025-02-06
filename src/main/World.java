@@ -1,6 +1,5 @@
 package main;
 
-import main.Configs.SimulationConfig;
 import main.Entities.*;
 import main.exeptions.EntityNotFoundException;
 import main.exeptions.NoFreeCoordinatesException;
@@ -9,11 +8,16 @@ import main.utils.Coordinates;
 import java.util.*;
 
 public class World {
-    public static final int WIDTH = SimulationConfig.WORLD_WIDTH;
-    public static final int HEIGHT = SimulationConfig.WORLD_HEIGHT;
+    // x - это высота, а y - ширина
+    private final int WIDTH;
+    private final int HEIGHT;
     private final Map<Coordinates, Entity> entities = new HashMap<>();
     private final List<Coordinates> entitiesToRemove = new ArrayList<>();
 
+    public World(int width, int height) {
+        this.WIDTH = width;
+        this.HEIGHT = height;
+    }
 
 
     public Map<Coordinates, Entity> getEntities() {
@@ -56,8 +60,7 @@ public class World {
 
             if (entity instanceof Creature creature && creature.isDead()) {
                 markForRemoval(coordinates);
-            }
-            else if (entity instanceof Grass grass && grass.isEaten()) {
+            } else if (entity instanceof Grass grass && grass.isEaten()) {
                 markForRemoval(coordinates);
             }
         }
@@ -68,8 +71,9 @@ public class World {
 
         entitiesToRemove.clear();
     }
-    public int getWorldSquare(){
-        return WIDTH*HEIGHT;
+
+    public int getWorldSquare() {
+        return WIDTH * HEIGHT;
     }
 
     public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
@@ -97,6 +101,7 @@ public class World {
 
     public Entity getEntity(Coordinates coordinates) {
         // получение сущности по координатам
+
         return entities.get(coordinates);
     }
 
@@ -184,10 +189,11 @@ public class World {
     }
 
     public int getHight() {
-        return SimulationConfig.WORLD_HEIGHT;
+        return HEIGHT;
     }
 
     public int getWidth() {
 
-    return SimulationConfig.WORLD_WIDTH;}
+        return WIDTH;
+    }
 }

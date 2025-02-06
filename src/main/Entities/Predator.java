@@ -7,7 +7,7 @@ public class Predator extends Creature {
     private final int attackPower = 10;
 
     public Predator() {
-        super(Herbivore.class, 25, 2,25);
+        super(Herbivore.class, 25, 2,10);
     }
 
     @Override

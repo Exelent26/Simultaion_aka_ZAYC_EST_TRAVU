@@ -51,7 +51,7 @@ public abstract class Creature extends Entity {
         hunger++;
         if (hunger >= maxHungerLvl) {
             hunger = maxHungerLvl;
-            health--; // Уменьшаем здоровье из-за сильного голода
+            health--;
             System.out.println(this + " is starving! Health: " + health);
             if (health <= 0) {
                 alive = false;
@@ -62,16 +62,6 @@ public abstract class Creature extends Entity {
         hunger = Math.max(hunger - hungerRestoration, 0);
         health = Math.min(health + healthRestoration, maxHealth);
         System.out.println(this + " eats and restores hunger to " + hunger + " and health to " + health);
-    }
-
-
-
-    protected void markAsDead(World world) {
-        if (isDead()) {
-            Coordinates coordinates = world.getCoordinates(this);
-            world.markForRemoval(coordinates);
-            this.alive = false;
-        }
     }
 
 

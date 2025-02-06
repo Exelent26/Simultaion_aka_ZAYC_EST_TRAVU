@@ -5,7 +5,6 @@ import main.Entities.Creature;
 import main.World;
 import main.utils.BFS;
 import main.utils.Coordinates;
-import main.utils.WorldRender;
 
 import java.util.List;
 

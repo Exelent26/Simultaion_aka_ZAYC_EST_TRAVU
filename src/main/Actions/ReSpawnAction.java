@@ -1,8 +1,7 @@
 package main.Actions;
 
 import main.Configs.CreatureAndGrassRespawnConfig;
-import main.Entities.Grass;
-import main.EntityQuantityCalculator;
+import main.utils.EntityQuantityCalculator;
 import main.World;
 import main.utils.Coordinates;
 
@@ -18,14 +17,14 @@ public class ReSpawnAction implements Action {
 
     @Override
     public void execute(World world) {
-        int worldSquare = world.getWorldSquare();
+
         Random rand = new Random();
-        if(EntityQuantityCalculator.calculatePartOfEntityInMap(worldSquare,world, config.getEntityClass())<config.getMinPercentOfMapForRespawn()){
-            int entityTorRespawnQuantity = rand.nextInt(config.getMinimumEntityNumberToRespawn(),config.getMaximumEntityNumberToRespawn());
-            for (int i = 1; i <= entityTorRespawnQuantity ; i++) {
+        if (EntityQuantityCalculator.calculatePartOfEntityInMap(world, config.getEntityClass()) <= config.getMinPercentOfMapForRespawn()) {
+            int entityTorRespawnQuantity = rand.nextInt(config.getMinimumEntityNumberToRespawn(), config.getMaximumEntityNumberToRespawn());
+            for (int i = 1; i <= entityTorRespawnQuantity; i++) {
                 Coordinates temp = world.makeRandomPositionForEntity();
-                world.addEntity(config.getSupplier().get(),temp);
-                System.out.println("Added new entity "+config.getEntityClass()+" " + temp +" in quantity "+entityTorRespawnQuantity);
+                world.addEntity(config.getSupplier().get(), temp);
+                System.out.println("Added new entity " + config.getEntityClass() + " " + temp + " in quantity " + entityTorRespawnQuantity);
 
             }
         }
