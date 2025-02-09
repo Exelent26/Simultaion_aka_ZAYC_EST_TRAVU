@@ -1,19 +1,19 @@
 package main;
 
-import main.Actions.DeadCreaturesRemoverAction;
+import main.Actions.MarkedEntitiesRemoverAction;
 import main.Actions.InitialActions;
-import main.Actions.SimulationActions;
+import main.Actions.SimulationAction;
+import main.utils.InputHandler;
 import main.utils.WorldRender;
 import main.Actions.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class Simulation extends Thread {
 
-    public volatile boolean isStarted = true;
-    public volatile boolean isPaused = false;
+    public  volatile boolean isEnded = false;
+    public  volatile boolean isPaused = false;
 
 
     private int stepCount = 0;
@@ -28,35 +28,16 @@ public class Simulation extends Thread {
 
     }
 
-    public World getWorld() {
+    public  World getWorld() {
         return world;
     }
 
 
-    public void runSimulation() {
-        initialActions.execute(world);
-        stepCount++;
-        worldRender.render(world);
-
-        while (isStarted) {
-            synchronized (this) {
-                while (isPaused) { // Пока пауза, поток ждёт
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            nextStep(world);
-        }
-    }
-
-    private synchronized void nextStep(World world) {
+    public void nextStep(World world)  {
         System.out.println();
         System.out.println("Step: " + (stepCount++));
 
-        List<Action> actions = Arrays.asList(new SimulationActions(), new DeadCreaturesRemoverAction());
+        List<Action> actions = Arrays.asList(new SimulationAction(), new MarkedEntitiesRemoverAction(world));
         for (Action action : actions) {
             action.execute(world);
         }
@@ -64,65 +45,49 @@ public class Simulation extends Thread {
         worldRender.render(world);
         try {
             Thread.sleep(2000);
-        } catch (InterruptedException e) {
+        }catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void run() {
-        runSimulation();
+        initialActions.execute(world);
+        stepCount++;
+        worldRender.render(world);
+
+        while (!isEnded) {
+            if(isPaused) {
+                continue;
+            }
+            nextStep(world);
+            if (isEnded) {
+                break;
+            }
+        }
     }
 
-    public synchronized void makeOneStep(World world) {
-        nextStep(world);
-        isPaused = false; // Разрешаем выполнение одного шага
-        notify(); // Будим поток
-    }
-
-    public synchronized void shoutDown() {
-        this.isStarted = false;
-        this.isPaused = false; // Если поток на паузе, снимаем её
-        notify(); // Будим поток, если он ждал
-    }
-
-    public synchronized void pauseSim() {
+    public  void pauseSim() {
         this.isPaused = true;
     }
 
-    public synchronized void resumeSim() {
+    public  void resumeSim() {
         this.isPaused = false;
-        notify(); // Будим поток, чтобы он продолжил работать
+
+    }
+    public void shoutDown() {
+        this.isEnded = true;
+        this.isPaused = false;
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         Simulation simulation = new Simulation(new World(15, 15), new InitialActions(), new WorldRender());
         simulation.start();
-        Thread input = new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
-            while (true) {
-                System.out.println("Введите команду (1 - стоп, 2 - шаг, 3 - пауза, 4 - продолжить):");
-                int i = Integer.parseInt(scanner.nextLine());
 
-                if (i == 1) {
-                    simulation.shoutDown();
-                    break;
-                } else if (i == 2) {
-                    simulation.nextStep(simulation.getWorld());
-                } else if (i == 3) {
-                    simulation.pauseSim();
-                } else if (i == 4) {
-                    simulation.resumeSim();
-                } else {
-                    System.out.println("Неизвестная команда.");
-                }
-            }
+        InputHandler inputHandler = new InputHandler(simulation);
+        inputHandler.start();
 
-            System.out.println("Симуляция завершена.");
-        });
-
-        input.start();
     }
 
 }

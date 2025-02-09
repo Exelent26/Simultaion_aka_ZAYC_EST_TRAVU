@@ -22,7 +22,7 @@ public class SpawnAction implements Action {
                 spawnConfig.getMinimumOfEntityType());
         for (int i = 0; i < quantity; i++) {
             Entity entityToWorld = spawnConfig.getSupplier().get();
-            Coordinates coordinatesForSpawn = world.makeRandomPositionForEntity();
+            Coordinates coordinatesForSpawn = world.makePositionForNewEntity();
             world.addEntity(entityToWorld, coordinatesForSpawn);
         }
     }

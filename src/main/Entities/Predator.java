@@ -48,7 +48,6 @@ public class Predator extends Creature {
 
                 if (herbivore.isDead()) {
                     System.out.println("Herbivore at " + targetCoordinates + " is now dead. Killed by " + this);
-                    world.markForRemoval(targetCoordinates);
                     eatTarget(20, 15);
                 }
             }

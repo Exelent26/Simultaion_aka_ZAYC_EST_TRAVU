@@ -5,17 +5,16 @@ import main.World;
 
 public class WorldRender {
 
-    public static final String PREDATOR_SPRITE = "\uD83E\uDD81";
-    public static final String HERBIVORE_SPRITE = "\uD83D\uDC07";
-    public static final String TREE_SPRITE = "\uD83C\uDF84";
-    public static final String GRASS_SPRITE = "\uD83C\uDF31";
-    public static final String ROCK_SPRITE = "\uD83E\uDEA8";
-    public static final String FREE_SQUARE = "\uD83D\uDFEB";
+    private static final String PREDATOR_SPRITE = "\uD83E\uDD81";
+    private static final String HERBIVORE_SPRITE = "\uD83D\uDC07";
+    private static final String TREE_SPRITE = "\uD83C\uDF84";
+    private static final String GRASS_SPRITE = "\uD83C\uDF31";
+    private static final String ROCK_SPRITE = "\uD83E\uDEA8";
+    private static final String FREE_SQUARE = "\uD83D\uDFEB";
 
     public void render(World world) {
 
-
-        for (int x = 0; x < world.getHight(); x++) {
+        for (int x = 0; x < world.getHeight(); x++) {
             System.out.println();
             for (int y = 0; y < world.getWidth(); y++) {
                 Coordinates coordinates = new Coordinates(x, y);
@@ -29,11 +28,8 @@ public class WorldRender {
                     case null -> System.out.print(FREE_SQUARE);
                     default -> throw new IllegalStateException("Unexpected value: " + tempCoordinates);
                 }
-
             }
-
         }
         System.out.println();
     }
-
 }

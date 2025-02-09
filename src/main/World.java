@@ -1,5 +1,6 @@
 package main;
 
+import main.Actions.MarkedEntitiesRemoverAction;
 import main.Entities.*;
 import main.exeptions.EntityNotFoundException;
 import main.exeptions.NoFreeCoordinatesException;
@@ -12,32 +13,32 @@ public class World {
     private final int WIDTH;
     private final int HEIGHT;
     private final Map<Coordinates, Entity> entities = new HashMap<>();
-    private final List<Coordinates> entitiesToRemove = new ArrayList<>();
+
 
     public World(int width, int height) {
         this.WIDTH = width;
         this.HEIGHT = height;
     }
 
-
-    public Map<Coordinates, Entity> getEntities() {
-        // получение хэшмапы со всему сущностями в мире
-        return entities;
-    }
-
-    public List<Entity> getListOfEntities() {
+    public List<Entity> getEntities() {
         return new ArrayList<>(entities.values());
     }
 
 
     public void addEntity(Entity entity, Coordinates coordinates) {
-        entities.put(coordinates, entity);
-        if (entity instanceof Predator || entity instanceof Herbivore) {
-            System.out.println("Entity added: " + entity + " at " + coordinates);
+        if(isCoordinateInMap(coordinates) && isCoordinateFree(coordinates)) {
+            entities.put(coordinates, entity);
+        }else {
+            try {
+                entities.put(coordinates, entity);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Coordinates isn't empty or out of bounds");
+            }
         }
     }
 
     public Coordinates getCoordinates(Entity entity) {
+
         for (Map.Entry<Coordinates, Entity> entry : entities.entrySet()) {
             if (entry.getValue() == entity) {
                 return entry.getKey();
@@ -47,48 +48,6 @@ public class World {
 
     }
 
-    public void markForRemoval(Coordinates coordinates) {
-        if (!entitiesToRemove.contains(coordinates)) {
-            entitiesToRemove.add(coordinates);
-        }
-    }
-
-    public void cleanupDeadEntities() {
-        for (Map.Entry<Coordinates, Entity> entry : entities.entrySet()) {
-            Coordinates coordinates = entry.getKey();
-            Entity entity = entry.getValue();
-
-            if (entity instanceof Creature creature && creature.isDead()) {
-                markForRemoval(coordinates);
-            } else if (entity instanceof Grass grass && grass.isEaten()) {
-                markForRemoval(coordinates);
-            }
-        }
-        for (Coordinates coordinates : entitiesToRemove) {
-            Entity removed = entities.remove(coordinates);
-            System.out.println("Removed entity: " + removed + " from " + coordinates);
-        }
-
-        entitiesToRemove.clear();
-    }
-
-    public int getWorldSquare() {
-        return WIDTH * HEIGHT;
-    }
-
-    public boolean isCellAvailable(Coordinates coordinates, Creature creature) {
-        // координаты находятся в пределах мира
-        if (!isCoordinateInMap(coordinates)) {
-            return false;
-        }
-
-        if (entitiesToRemove.contains(coordinates)) {
-            return false;
-        }
-
-        // клетка проходима для конкретного энтити
-        return isCellPassable(coordinates, creature);
-    }
 
     public boolean containsEntity(Creature creature) {
         return entities.containsValue(creature);
@@ -106,11 +65,8 @@ public class World {
     }
 
     public void moveEntity(Coordinates from, Coordinates to, Entity entity) {
-        // тупое передвижение энтити из 1 координаты в другое, использую для премещения таргетов.
-        if (entitiesToRemove.contains(to)) {
-            System.out.println("Cannot move entity " + entity + " to " + to + ". Cell is marked for removal.");
-            return;
-        }
+
+
         if (entities.get(from).equals(entity)) {
             entities.remove(from);
         }
@@ -118,10 +74,8 @@ public class World {
     }
 
 
-    public boolean isCoordinateFree(Coordinates coordinates) {
-        // проверка на то что координата свободна
-        return !entities.containsKey(coordinates);
-    }
+
+
 
     public boolean isCellPassable(Coordinates coordinates, Creature creature) {
         // проверка на то что координата дотижима и в пределах карты
@@ -129,8 +83,12 @@ public class World {
             return false;
         }
 
+
         Entity entity = entities.get(coordinates);
         if (entity == null) {
+            return true;
+        }
+        if(isCoordinateFree(coordinates)) {
             return true;
         }
 
@@ -143,14 +101,25 @@ public class World {
     }
 
 
-    public Coordinates makeRandomPositionForEntity() {
+    private boolean isCoordinateFree(Coordinates coordinates) {
+        return !entities.containsKey(coordinates);
+    }
+    private boolean isCoordinateInMap(Coordinates coordinates) {
+
+        return coordinates.lines >= 0 && coordinates.lines < HEIGHT && coordinates.columns >= 0 && coordinates.columns < WIDTH;
+    }
+
+
+    public Coordinates makePositionForNewEntity() {
         Random random = new Random();
 
-        Coordinates randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));//попробуем изменить wirld width на hight
+        Coordinates randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
 
         try {
-            while (!isCoordinateFree(randomCoordinateForEntity)) {
+            int attempts = this.getWorldSquare();
+            while (!isCoordinateFree(randomCoordinateForEntity) && attempts > 0) {
                 randomCoordinateForEntity = new Coordinates(random.nextInt(HEIGHT), random.nextInt(WIDTH));
+                attempts--;
             }
             return randomCoordinateForEntity;
         } catch (NoFreeCoordinatesException e) {
@@ -159,41 +128,34 @@ public class World {
 
     }
 
-    public boolean isCoordinateInMap(Coordinates coordinates) {
 
-        return coordinates.lines >= 0 && coordinates.lines < HEIGHT && coordinates.columns >= 0 && coordinates.columns < WIDTH;
-    }
-
-    public List<Creature> getAllCreatures() {
-        return entities.values().stream()
-                .filter(entity -> entity instanceof Creature)
-                .map(entity -> (Creature) entity)
-                .toList();
-    }
 
     public List<Coordinates> getAvailableMoves(Coordinates coordinates, Creature creature) {
-        List<Coordinates> moves = Arrays.asList(
-                coordinates.shift(0, 1),
-                coordinates.shift(0, -1),
-                coordinates.shift(1, 0),
-                coordinates.shift(-1, 0)
-        );
+
+        List<Coordinates> moves = List.of(coordinates.shift(0, 1),
+                coordinates.shift(0, -1), coordinates.shift(1, 0),
+                coordinates.shift(-1, 0));
 
         List<Coordinates> validMoves = new ArrayList<>();
+
         for (Coordinates move : moves) {
-            if (isCoordinateInMap(move) && isCellPassable(move, creature)) { // Используем isCellPassable
+            if (isCellPassable(move, creature)) {
                 validMoves.add(move);
             }
         }
         return validMoves;
     }
 
-    public int getHight() {
+    public int getHeight() {
         return HEIGHT;
     }
 
     public int getWidth() {
 
         return WIDTH;
+    }
+
+    public int getWorldSquare() {
+        return WIDTH * HEIGHT;
     }
 }

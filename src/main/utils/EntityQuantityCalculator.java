@@ -14,7 +14,7 @@ public class EntityQuantityCalculator {
 
     }
     public static double calculatePartOfEntityInMap(World world, Class<? extends Entity> typeOfEntity){
-        List<Entity> entities = world.getListOfEntities();
+        List<Entity> entities = world.getEntities();
 
         int correctQuantityOfEntityInMap = (int)entities.stream().
                 filter(typeOfEntity::isInstance).count();

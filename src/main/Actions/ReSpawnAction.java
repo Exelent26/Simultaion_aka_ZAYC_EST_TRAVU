@@ -22,7 +22,7 @@ public class ReSpawnAction implements Action {
         if (EntityQuantityCalculator.calculatePartOfEntityInMap(world, config.getEntityClass()) <= config.getMinPercentOfMapForRespawn()) {
             int entityTorRespawnQuantity = rand.nextInt(config.getMinimumEntityNumberToRespawn(), config.getMaximumEntityNumberToRespawn());
             for (int i = 1; i <= entityTorRespawnQuantity; i++) {
-                Coordinates temp = world.makeRandomPositionForEntity();
+                Coordinates temp = world.makePositionForNewEntity();
                 world.addEntity(config.getSupplier().get(), temp);
                 System.out.println("Added new entity " + config.getEntityClass() + " " + temp + " in quantity " + entityTorRespawnQuantity);
 

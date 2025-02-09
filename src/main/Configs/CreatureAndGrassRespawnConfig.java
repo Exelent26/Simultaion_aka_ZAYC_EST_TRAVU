@@ -19,7 +19,7 @@ public enum CreatureAndGrassRespawnConfig {
             Predator.class,
             1,
             0,
-            1),
+            2),
     GRASS(
             () -> new Grass(),
             Grass.class,

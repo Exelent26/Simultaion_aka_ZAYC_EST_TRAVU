@@ -38,7 +38,6 @@ public class Herbivore extends Creature {
             if (!grass.isEaten() && prepareToEatCounter == 1) {
                 // Если трава ещё не съедена, помечаем её как съеденную
                 grass.markAsEaten();
-                world.markForRemoval(targetCoordinates); // Помечаем для удаления
                 eatTarget(25, 15); // Восстанавливаем голод и здоровье
                 prepareToEatCounter = 0; // Сбрасываем счётчик подготовки
                 System.out.println(this + " ate grass at " + targetCoordinates);
