@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MarkedEntitiesRemoverAction implements Action {
-    World world;
+    private final World world;
 
     public MarkedEntitiesRemoverAction(World world) {
         this.world = world;
@@ -45,9 +45,7 @@ public class MarkedEntitiesRemoverAction implements Action {
 
     private void cleanupMarketedEntities() {
         for (Coordinates coordinates : entitiesToRemove) {
-            Entity entity = world.getEntity(coordinates);
             world.removeEntity(coordinates);
-            System.out.println("Removed entity: " + entity + " from " + coordinates);
         }
         entitiesToRemove.clear();
     }

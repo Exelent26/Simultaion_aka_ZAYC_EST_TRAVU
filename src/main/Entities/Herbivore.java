@@ -13,19 +13,17 @@ public class Herbivore extends Creature {
 
     @Override
     public void makeMove(World world, Coordinates nextStep) {
-        if(!alive){
+        if(!isAlive()){
             return;
         }
         if (nextStep == null) {
             makeRandomMove(world);
             return;
         }
-        Entity entity = world.getEntity(nextStep);
+        Entity entity = world.getEntity(nextStep).orElse(null);
         if (entity instanceof Grass) {
             interactWithEntity(world, entity, nextStep);
         }else {
-            Coordinates currentCoordinates = world.getCoordinates(this);
-            System.out.println("Moving entity " + this + " from " + currentCoordinates + " to " + nextStep);
             makeStep(world, nextStep);
         }
     }
@@ -36,19 +34,13 @@ public class Herbivore extends Creature {
     protected void interactWithEntity(World world, Entity entity, Coordinates targetCoordinates) {
         if (entity instanceof Grass grass) {
             if (!grass.isEaten() && prepareToEatCounter == 1) {
-                // Если трава ещё не съедена, помечаем её как съеденную
                 grass.markAsEaten();
-                eatTarget(25, 15); // Восстанавливаем голод и здоровье
-                prepareToEatCounter = 0; // Сбрасываем счётчик подготовки
-                System.out.println(this + " ate grass at " + targetCoordinates);
-            } else if (!grass.isEaten() && prepareToEatCounter == 0) {
-                // Если только начали готовиться к поеданию
-                prepareToEatCounter++;
-                System.out.println(this + " is preparing to eat grass.");
-            } else {
-                // Если трава уже съедена другим существом
+                eatTarget(25, 15);
                 prepareToEatCounter = 0;
-                System.out.println(this + " couldn't eat grass at " + targetCoordinates + " because it's already eaten.");
+            } else if (!grass.isEaten() && prepareToEatCounter == 0) {
+                prepareToEatCounter++;
+            } else {
+                prepareToEatCounter = 0;
             }
         }
     }

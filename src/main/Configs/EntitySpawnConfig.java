@@ -7,27 +7,27 @@ import java.util.function.Supplier;
 public enum EntitySpawnConfig {
 
     HERBIVORE(
-            () -> new Herbivore(),
+            Herbivore::new,
             4,
             3
     ),
     PREDATOR(
-            () -> new Predator(),
+            Predator::new,
             1,
             2
     ),
     GRASS(
-            () -> new Grass(),
+            Grass::new,
             12,
             1
     ),
     ROCK(
-            () -> new Rock(),
+            Rock::new,
             7,
             1
     ),
     TREE(
-            () -> new Tree(),
+            Tree::new,
             5,
             1
     )

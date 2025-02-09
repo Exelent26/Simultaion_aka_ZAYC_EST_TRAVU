@@ -3,8 +3,8 @@ package main.utils;
 import main.Entities.Creature;
 import main.Entities.Entity;
 import main.World;
+import main.exeptions.EntityNotFoundException;
 
-import java.nio.file.Path;
 import java.util.*;
 
 public class BFS {
@@ -19,15 +19,15 @@ public class BFS {
 
         while (!queue.isEmpty()) {
             Coordinates current = queue.poll();
-            Creature finder = (Creature) world.getEntity(start);
+            Creature finder = (Creature) world.getEntity(start).orElseThrow(() -> new EntityNotFoundException("Creature not found"));
             for (Coordinates neighbor : world.getAvailableMoves(current, finder)) {
                 if (!visited.contains(neighbor)) {
                     visited.add(neighbor);
                     queue.add(neighbor);
                     cameFrom.put(neighbor, current);
 
-                    Entity entityAtNeighbor = world.getEntity(neighbor);
-                    if (entityAtNeighbor != null && food.isInstance(entityAtNeighbor)) {
+                    Entity entityAtNeighbor = world.getEntity(neighbor).orElse(null);
+                    if (food.isInstance(entityAtNeighbor)) {
                         return reconstructPath(start, neighbor, cameFrom);
                     }
                 }

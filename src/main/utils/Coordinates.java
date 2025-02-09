@@ -1,8 +1,9 @@
 package main.utils;
 
 public class Coordinates {
-    public final int lines;
-    public final int columns;
+
+    private final int lines;
+    private final int columns;
 
     public Coordinates(int x, int y) {
         this.lines = x;
@@ -13,6 +14,13 @@ public class Coordinates {
         return new Coordinates(lines + dx, columns + dy);
     }
 
+    public int getLines() {
+        return lines;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

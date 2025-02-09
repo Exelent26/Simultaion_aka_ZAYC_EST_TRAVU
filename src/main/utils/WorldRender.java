@@ -18,7 +18,7 @@ public class WorldRender {
             System.out.println();
             for (int y = 0; y < world.getWidth(); y++) {
                 Coordinates coordinates = new Coordinates(x, y);
-                Entity tempCoordinates = world.getEntity(coordinates);
+                Entity tempCoordinates = world.getEntity(coordinates).orElse(null);
                 switch (tempCoordinates) {
                     case Herbivore herbivore -> System.out.print(HERBIVORE_SPRITE);
                     case Grass grass -> System.out.print(GRASS_SPRITE);

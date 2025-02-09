@@ -8,20 +8,20 @@ import java.util.function.Supplier;
 public enum CreatureAndGrassRespawnConfig {
 
     HERBIVORE(
-            () -> new Herbivore(),
+            Herbivore::new,
             Herbivore.class,
             3,
             0,
             6
     ),
     PREDATOR(
-            () -> new Predator(),
+            Predator::new,
             Predator.class,
             1,
             0,
             2),
     GRASS(
-            () -> new Grass(),
+            Grass::new,
             Grass.class,
             5,
             3,

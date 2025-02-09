@@ -3,7 +3,7 @@ package main;
 import main.Actions.MarkedEntitiesRemoverAction;
 import main.Actions.InitialActions;
 import main.Actions.SimulationAction;
-import main.utils.InputHandler;
+import main.utils.StepCounter;
 import main.utils.WorldRender;
 import main.Actions.*;
 
@@ -16,10 +16,11 @@ public class Simulation extends Thread {
     public  volatile boolean isPaused = false;
 
 
-    private int stepCount = 0;
+
     private final World world;
     private final InitialActions initialActions;
     private final WorldRender worldRender;
+    private final StepCounter stepCounter = new StepCounter();
 
     public Simulation(World world, InitialActions initialActions, WorldRender worldRender) {
         this.world = world;
@@ -35,7 +36,8 @@ public class Simulation extends Thread {
 
     public void nextStep(World world)  {
         System.out.println();
-        System.out.println("Step: " + (stepCount++));
+        stepCounter.increaseStepCount();
+        stepCounter.printStepCount();
 
         List<Action> actions = Arrays.asList(new SimulationAction(), new MarkedEntitiesRemoverAction(world));
         for (Action action : actions) {
@@ -53,7 +55,6 @@ public class Simulation extends Thread {
     @Override
     public void run() {
         initialActions.execute(world);
-        stepCount++;
         worldRender.render(world);
 
         while (!isEnded) {
@@ -80,15 +81,6 @@ public class Simulation extends Thread {
         this.isPaused = false;
     }
 
-    public static void main(String[] args) {
-
-        Simulation simulation = new Simulation(new World(15, 15), new InitialActions(), new WorldRender());
-        simulation.start();
-
-        InputHandler inputHandler = new InputHandler(simulation);
-        inputHandler.start();
-
-    }
 
 }
 

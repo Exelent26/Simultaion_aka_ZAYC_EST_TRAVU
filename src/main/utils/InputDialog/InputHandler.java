@@ -1,7 +1,7 @@
-package main.utils;
+package main.utils.InputDialog;
 
 import main.Simulation;
-import java.io.IOException;
+
 import java.util.List;
 
 public class InputHandler extends Thread {
@@ -24,16 +24,10 @@ public class InputHandler extends Thread {
 
     @Override
     public void run() {
-        try {
-            simulationStatusRedactor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        simulationStatusRedactor();
     }
 
-    private void simulationStatusRedactor() throws IOException, InterruptedException {
+    private void simulationStatusRedactor()  {
         while (!simulation.isEnded) {
                 int modeSelector = inputSimulationControlDialog.input();
                 switch (modeSelector) {

@@ -1,8 +1,9 @@
-package main.utils;
+package main.utils.InputDialog;
+
 import java.util.List;
 import java.util.Objects;
 
-public class InputSimulationControlDialog extends AbstractDialog<Integer>{
+public class InputSimulationControlDialog extends AbstractDialog<Integer> {
 
     public InputSimulationControlDialog(String title, String error, List<Integer> keys){
         super(title,

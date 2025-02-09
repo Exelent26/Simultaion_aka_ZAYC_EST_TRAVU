@@ -24,8 +24,6 @@ public class ReSpawnAction implements Action {
             for (int i = 1; i <= entityTorRespawnQuantity; i++) {
                 Coordinates temp = world.makePositionForNewEntity();
                 world.addEntity(config.getSupplier().get(), temp);
-                System.out.println("Added new entity " + config.getEntityClass() + " " + temp + " in quantity " + entityTorRespawnQuantity);
-
             }
         }
 

@@ -8,12 +8,12 @@ import java.util.Random;
 
 public abstract class Creature extends Entity {
     protected final Class<? extends Entity> foodType;
-    public int health;
-    public int speed;
-    public boolean alive;
-    public int hunger;
-    public int maxHungerLvl;
-    public int maxHealth;
+    private int health;
+    private final int speed;
+    private boolean alive;
+    private int hunger;
+    private final int maxHungerLvl;
+    private final int maxHealth;
 
     public Creature(Class<? extends Entity> foodType, int health, int speed,int maxHunger) {
         this.foodType = foodType;
@@ -28,6 +28,13 @@ public abstract class Creature extends Entity {
     public Class<? extends Entity> getFoodType() {
         return foodType;
     }
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
 
     public boolean canInteract(Entity entity) {
         return foodType.isInstance(entity);
@@ -39,7 +46,6 @@ public abstract class Creature extends Entity {
         if (!availableMoves.isEmpty()) {
             Coordinates randomMove = availableMoves.get(new Random().nextInt(availableMoves.size()));
             makeStep(world, randomMove);
-            System.out.println("Random moving entity " + this + " from " + currentCoordinates + " to " + randomMove);
         }
     }
 
@@ -52,7 +58,6 @@ public abstract class Creature extends Entity {
         if (hunger >= maxHungerLvl) {
             hunger = maxHungerLvl;
             health--;
-            System.out.println(this + " is starving! Health: " + health);
             if (health <= 0) {
                 alive = false;
             }
@@ -61,12 +66,11 @@ public abstract class Creature extends Entity {
     public void eatTarget(int hungerRestoration, int healthRestoration) {
         hunger = Math.max(hunger - hungerRestoration, 0);
         health = Math.min(health + healthRestoration, maxHealth);
-        System.out.println(this + " eats and restores hunger to " + hunger + " and health to " + health);
     }
 
 
     public void makeStep(World world, Coordinates nextStep) {
-        Entity targetEntity = world.getEntity(nextStep);
+        Entity targetEntity = world.getEntity(nextStep).orElse(null);
 
         if (targetEntity != null && canInteract(targetEntity)) {
             interactWithEntity(world, targetEntity, nextStep);
@@ -84,5 +88,9 @@ public abstract class Creature extends Entity {
 
     public int getSpeed() {
         return speed;
+    }
+
+    public boolean isAlive() {
+        return alive;
     }
 }

@@ -1,4 +1,4 @@
-package main.utils;
+package main.utils.InputDialog;
 
 import java.util.Scanner;
 import java.util.function.Function;
@@ -39,6 +39,7 @@ public abstract class AbstractDialog<T> implements Dialog<T> {
                     return result;
                 }
             } catch (IllegalArgumentException e) {
+                System.out.println(error);
             }
             showError();
         }

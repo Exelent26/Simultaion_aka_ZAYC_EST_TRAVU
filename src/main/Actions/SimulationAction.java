@@ -7,7 +7,6 @@ import main.utils.BFS;
 import main.utils.Coordinates;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SimulationAction implements Action {
 
@@ -21,11 +20,11 @@ public class SimulationAction implements Action {
 
         List<Creature> creatures = (world.getEntities()).stream().
                 filter(entity -> entity instanceof Creature).
-                map(entity -> (Creature) entity).toList();;
+                map(entity -> (Creature) entity).toList();
         BFS bfs = new BFS();
 
         for (Creature creature : creatures) {
-            if (world.containsEntity(creature) && creature.alive) {
+            if (creature.isAlive()) {
                 creature.increaseHunger();
                 if (!creature.isDead()) {
                     for (int i = 0; i < creature.getSpeed(); i++) {
